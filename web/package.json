@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^0.17.1",
+    "axios": "^1.15.1",
     "jwt-decode": "^2.2.0",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.14",
@@ -15,7 +15,7 @@
     "react-loading-animation": "^1.4.0",
     "react-modal": "^3.1.11",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17"
+    "react-scripts": "^0.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,7 +30,7 @@
     "legacy-peer-deps": true
   },
   "devDependencies": {
-    "autoprefixer-stylus": "^0.14.0",
+    "autoprefixer-stylus": "^0.6.0",
     "concurrently": "^3.5.1",
     "stylus": "^0.54.5"
   }
