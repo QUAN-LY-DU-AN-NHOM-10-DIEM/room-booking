@@ -26,6 +26,9 @@
     "styles": "stylus -u autoprefixer-stylus ./src/css/style.styl -o ./src/css/style.css",
     "styles:watch": "stylus -u autoprefixer-stylus -w ./src/css/style.styl -o ./src/css/style.css"
   },
+  "npmrc": {
+    "legacy-peer-deps": true
+  },
   "devDependencies": {
     "autoprefixer-stylus": "^0.14.0",
     "concurrently": "^3.5.1",

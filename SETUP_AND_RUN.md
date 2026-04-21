@@ -34,13 +34,13 @@ Mở terminal mới và chạy:
 
 ```bash
 cd web
-yarn install
+npm install --legacy-peer-deps
 ```
 
 hoặc
 
 ```bash
-npm install
+yarn install
 ```
 
 ## Bước 4: Khởi Động MongoDB
@@ -127,10 +127,22 @@ Xem thêm: [Passport Google OAuth2](https://github.com/jaredhanson/passport-goog
 - Xóa folder `node_modules` và chạy `yarn install` lại
 - Kiểm tra cổng 3000 có bị chiếm không
 
+### Lỗi peer dependency (ERESOLVE)
+Nếu gặp lỗi như `unable to resolve dependency tree`, hãy chạy:
+
+```bash
+npm install --legacy-peer-deps
+```
+
+Hoặc thêm vào `.npmrc`:
+```
+legacy-peer-deps=true
+```
+
 ### Lỗi về dependencies
 ```bash
 yarn cache clean
-yarn install
+yarn install --legacy-peer-deps
 ```
 
 ---
