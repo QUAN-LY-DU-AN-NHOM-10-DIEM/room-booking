@@ -5,6 +5,7 @@ import Button from './Button'
 import { findRoomInfo } from '../helpers/bookingForm.js'
 
 const BookingModal = props => {
+  console.log('BookingModal props:', props)
   const [cachedBooking, setCachedBooking] = useState(props.selectedBooking)
 
   useEffect(() => {
@@ -39,8 +40,7 @@ const BookingModal = props => {
       {booking && (
         <div className="modal__boday">
           <p className="modal__paragraph"><strong>Title: </strong>{booking['title']}</p>
-          <p className="modal__paragraph"><strong>Participants: </strong>{booking['participants'] || 1}</p>
-          <p className="modal__paragraph"><strong>Name: </strong>{booking.user && booking.user.firstName ? `${booking.user.firstName} ${booking.user.lastName}` : 'Unknown'}</p>
+          <p className="modal__paragraph"><strong>Name: </strong>{booking.user.firstName} {booking.user.lastName}</p>
           <p className="modal__paragraph"><strong>Email: </strong>{booking.user && booking.user.email ? booking.user.email : 'Unknown'}</p>
           <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(booking.roomId, props.roomData).name}{', Level '}
           {findRoomInfo(booking.roomId, props.roomData).floor}</p>
