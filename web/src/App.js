@@ -30,7 +30,7 @@ import { getDecodedToken } from './api/token'
 import { makeBooking, deleteBooking, updateStateRoom } from './api/booking'
 import Calendar from './components/Calendar'
 import BookingModal from './components/BookingModal'
-import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByAvailablity } from './helpers/filters'
+import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByStatus } from './helpers/filters'
 import { initialRoom } from './helpers/rooms'
 
 class App extends Component {
@@ -43,12 +43,13 @@ class App extends Component {
     filterParams: filterParams,
     capacityParams: capacityParams,
     floorParam: 'all',
-    availabilityParam: null,
+    statusParam: 'all',
     filteredData: null,
     checked: null,
     currentRoom: null,
     error: null,
-    disableRecurring: true
+    disableRecurring: true,
+    isSubmitting: false
   }
 
   // Pass supplied first name, lastname, email & password to the signUp function, returns the user's token
@@ -86,26 +87,32 @@ class App extends Component {
   }
 
   // Makes a booking by updating the database and the React state
-  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData }) => {
-    const bookingData = { startDate, endDate, businessUnit, purpose, roomId }
+  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }) => {
+    this.setState({ isSubmitting: true })
     const existingBookings = this.state.currentRoom.bookings
 
     // Check if there is a clash and, if not, save the new booking to the database
     try {
       makeBooking(
-        { startDate, endDate, businessUnit, purpose, roomId, recurringData },
+        { startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants },
         existingBookings
       )
         .then(updatedRoom => {
+          this.setState({ isSubmitting: false })
           // If the new booking is successfully saved to the database
-          alert(`${updatedRoom.name} successfully booked.`)
+          alert(`Your request for ${updatedRoom.name} was submitted. Status: Pending.`)
           updateStateRoom(this, updatedRoom, this.loadMyBookings)
         })
+        .catch(err => {
+          this.setState({ isSubmitting: false })
+          // If there is an error during submission
+          console.error(err)
+          alert(err.message || 'An error occurred while booking.')
+        })
     } catch (err) {
+      this.setState({ isSubmitting: false })
       // If there is a booking clash and the booking could not be saved
-      alert(
-        'Your booking could not be saved. Please ensure it does not clash with an existing booking and that it is a valid time in the future.'
-      )
+      alert(err.message || 'Your booking could not be saved. Please ensure it does not clash with an existing booking and that it is a valid time in the future.')
       console.log(err)
     }
   }
@@ -168,8 +175,8 @@ class App extends Component {
 		this.setState({ floorParam: value })
   }
 
-  onSetAvailabilityParam = availability => {
-    this.setState({ availabilityParam: availability })
+  onSetStatusParam = status => {
+    this.setState({ statusParam: status })
   }
 
   // get today's bookings for all rooms
@@ -221,8 +228,9 @@ class App extends Component {
       filterParams,
       capacityParams,
       floorParam,
-      availabilityParam,
+      statusParam,
       disableRecurring,
+      isSubmitting,
       loading
     } = this.state
     const signedIn = !!decodedToken
@@ -243,8 +251,10 @@ class App extends Component {
       filteredData = onFilterByFeature(featureParams, filteredData)
       // Send the previously filtered data along with the capacity params
       filteredData = onFilterByCapacity(capacityParams, filteredData)
-      // Send the previously filtered data along with the availability
-      filteredData = onFilterByAvailablity(availabilityParam, filteredData)
+      // Send the previously filtered data along with the status
+      if (statusParam && statusParam !== 'all') {
+        filteredData = onFilterByStatus(statusParam, filteredData, calendarDate)
+      }
     }
 
     const requireAuth = render => () =>
@@ -298,13 +308,11 @@ class App extends Component {
                                 onSetFloorParam={this.onSetFloorParam}
                                 onToggleFeature={this.onToggleFeature}
                                 onToggleCapacity={this.onToggleCapacity}
-                                onSetAvailabilityParam={
-                                  this.onSetAvailabilityParam
-                                }
+                                onSetStatusParam={this.onSetStatusParam}
                                 filterParams={filterParams}
                                 capacityParams={capacityParams}
                                 floorParam={floorParam}
-                                availabilityParam={availabilityParam}
+                                statusParam={statusParam}
                                 onSetTimeFilterParams={this.onSetTimeFilterParams}
                                 date={calendarDate}
                               />
@@ -357,6 +365,7 @@ class App extends Component {
                                 onMakeBooking={this.onMakeBooking}
                                 date={calendarDate}
                                 disableRecurring={disableRecurring}
+                                isSubmitting={isSubmitting}
                                 updateCalendar={setCalendarDate}
                                 onShowBooking={this.onShowBooking}
                                 onToggleRecurring={this.onToggleRecurring}

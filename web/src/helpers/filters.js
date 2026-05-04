@@ -1,4 +1,5 @@
 import moment from 'moment'
+import momentTimezone from 'moment-timezone'
 import { formatTime, timeSelectOptions} from '../helpers/bookingForm'
 
 // Initial room filter parameters
@@ -65,16 +66,17 @@ export const onFilterByCapacity = (params, filteredData) => {
   }
 }
 
-// Filter data by availability
-export const onFilterByAvailablity = (params, filteredData) => {
-  if (params === 'fullyAvail') {
-    filteredData = filteredData.filter(room => room.bookings.length === 0)
-  } else if (params === 'partAvail') {
-    filteredData = filteredData.filter(room => room.bookings.length > 0)
-  } else if (params === 'fullBooked') {
-    filteredData =
-      !filteredData.filter(room => room.bookings.length > 0) &&
-      !filteredData.filter(room => room.bookings.length === 0)
+// Filter data by status
+export const onFilterByStatus = (param, filteredData, date) => {
+  const isSameDate = (bookingStart) => 
+    momentTimezone.tz(bookingStart, 'Asia/Ho_Chi_Minh').format('DD-MM-YYYY') === moment(date).format('DD-MM-YYYY');
+
+  if (param === 'pending') {
+    filteredData = filteredData.filter(room => room.bookings.some(b => isSameDate(b.bookingStart) && (!b.status || b.status.toLowerCase() === 'pending')))
+  } else if (param === 'accepted') {
+    filteredData = filteredData.filter(room => room.bookings.some(b => isSameDate(b.bookingStart) && b.status && b.status.toLowerCase() === 'accepted'))
+  } else if (param === 'maintenance') {
+    filteredData = filteredData.filter(room => room.bookings.some(b => isSameDate(b.bookingStart) && b.status && b.status.toLowerCase() === 'maintenance'))
   }
   return filteredData
 }

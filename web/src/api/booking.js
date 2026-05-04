@@ -6,7 +6,7 @@ import api from './init'
 // Data expected in [year, month, date, hours, seconds] format
 const dateUTC = (dataArray) => {
   // Ensure date data is saved in AEST and then converted to a Date object in UTC
-  return momentTimezone(dataArray).tz('Australia/Sydney').toDate()
+  return momentTimezone(dataArray).tz('Asia/Ho_Chi_Minh').toDate()
 }
 
 // Make a room booking
@@ -23,6 +23,8 @@ export function makeBooking(data, existingBookings) {
   let bookingClash = false
 
   existingBookings.forEach(booking => {
+    // Ignore Failed bookings
+    if (booking.status === 'Failed') return
 
     // Convert existing booking Date objects into number values
     let existingBookingStart = new Date(booking.bookingStart).getTime()
@@ -36,26 +38,39 @@ export function makeBooking(data, existingBookings) {
     }
   })
 
-  // Ensure the new booking is valid (i.e. the start time is before the end time, and the booking is for a future time)
-  let validDate = newBookingStart < newBookingEnd && newBookingStart > new Date().getTime()
-
-  // If a recurring booking as been selected, ensure the end date is after the start date
-  let validRecurring = (data.recurringData.length > 0) ? 
-    dateUTC(data.recurringData[0]).getTime() > newBookingEnd : true
-
-  // Save the booking to the database and return the booking if there are no clashes and the new booking time is not in the past
-  if (!bookingClash && validDate && validRecurring) {
-    return api.put(`/rooms/${data.roomId}`, {
-      bookingStart: bookingStart,
-      bookingEnd: bookingEnd,
-      businessUnit: data.businessUnit,
-      purpose: data.purpose,
-      roomId: data.roomId,
-      recurring: data.recurringData
-    })
-      .then(res => res.data)
-      .catch(err => alert(err.response.data.error.message.match(/error:.+/i)[0]))
+  if (bookingClash) {
+    return Promise.reject(new Error('Khung giờ này vừa được người khác đặt.'));
   }
+  if (newBookingStart <= new Date().getTime()) {
+    return Promise.reject(new Error('Không cho đặt trong quá khứ.'));
+  }
+  if (newBookingStart >= newBookingEnd) {
+    return Promise.reject(new Error('Thời gian kết thúc phải sau thời gian bắt đầu.'));
+  }
+
+  let validRecurring = (data.recurringData.length > 0) ? 
+    dateUTC(data.recurringData[0]).getTime() > newBookingEnd : true;
+
+  if (!validRecurring) {
+    return Promise.reject(new Error('Thời gian lặp lại không hợp lệ.'));
+  }
+
+  // Save the booking to the database and return the booking
+  return api.put(`/rooms/${data.roomId}`, {
+    bookingStart: bookingStart,
+    bookingEnd: bookingEnd,
+    businessUnit: data.businessUnit,
+    purpose: data.purpose,
+    roomId: data.roomId,
+    recurring: data.recurringData,
+    title: data.title,
+    participants: data.participants
+  })
+    .then(res => res.data)
+    .catch(err => {
+      const errorMsg = (err.response && err.response.data && err.response.data.error) || err.message || 'An error occurred';
+      throw new Error(errorMsg);
+    })
 }
 
 // Delete a room booking

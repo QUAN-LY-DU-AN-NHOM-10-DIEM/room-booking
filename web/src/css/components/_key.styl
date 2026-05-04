@@ -3,7 +3,8 @@
   padding 1.6rem 3.4rem 3rem 3.4rem
   width 23rem
   &__group
-    display inline-flex
+    display flex
+    margin-bottom 1rem
     align-items center
   &__description
     display inline-block
@@ -15,13 +16,9 @@
     display inline-block
     width 1em
     height 1em
-    &--bu1
-      background businessUnit1
-    &--bu2
-      background businessUnit2
-    &--bu3
-      background businessUnit3
-    &--bu4
-      background businessUnit4
-    &--bu5
-      background businessUnit5
+    &--pending
+      background #f39c12 // orange
+    &--accepted
+      background #27ae60 // green
+    &--maintenance
+      background #c0392b // red

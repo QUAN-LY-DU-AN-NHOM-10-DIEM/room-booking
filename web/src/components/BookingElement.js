@@ -11,14 +11,14 @@ function BookingElement({
 }) {
 
   const roomInfo = findRoomInfo(bookingData.roomId, roomData)
-  const startTime = momentTimezone.tz(bookingData.bookingStart, 'Australia/Sydney').format('h.mma')
-  const endTime = momentTimezone.tz(bookingData.bookingEnd, 'Australia/Sydney').format('h.mma')
+  const startTime = momentTimezone.tz(bookingData.bookingStart, 'Asia/Ho_Chi_Minh').format('h.mma')
+  const endTime = momentTimezone.tz(bookingData.bookingEnd, 'Asia/Ho_Chi_Minh').format('h.mma')
 
   return (
     <div className="booking__box">
       <div className="booking__innerbox--left">
         <h3 className="header__heading--sub--alt header__heading--small">{moment(bookingData.bookingStart).format('dddd, MMMM Do YYYY')}</h3>
-        <p>{bookingData.businessUnit}</p>
+        <p>Status: {bookingData.status}</p>
         <p>{bookingData.purpose}</p>
       </div>
       <div className="booking__innerbox--middle">
@@ -29,7 +29,7 @@ function BookingElement({
       <div className="booking__innerbox--right">
         <Button
           onClick={() => onDeleteBooking(bookingData.roomId, bookingData._id)}
-          text={`Delete`}
+          text={`Cancel`}
         />
       </div>
     </div>

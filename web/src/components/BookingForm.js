@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom'
 import Button from './Button'
 import { formatTime, startTimeSelectOptions, endTimeSelectOptions } from '../helpers/bookingForm'
 
-function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onShowBooking, disableRecurring, onToggleRecurring }) {
+function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onShowBooking, disableRecurring, onToggleRecurring, isSubmitting }) {
   // Disable sunday (day 0) on the calendar as an booking option
   const valid = function(current) {
     return current.day() !== 0
@@ -63,13 +63,17 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
             const endTime = formatTime(formData.endTime.value)
             const endDate = [...dateArray, ...endTime]
             // Booking specifics
-            const businessUnit = formData.business.value
-            let recurringEnd = handleEndDate(formData.recurringEndDate.value.split('-'))
-            const recurringType = formData.recurring.value
-            let recurringData = handleRecurringData(recurringType, recurringEnd)
+            const businessUnit = 'Khoa KH&KT Máy tính' // Removed from form as per request
+            // let recurringEnd = handleEndDate(formData.recurringEndDate.value.split('-'))
+            // const recurringType = formData.recurring.value
+            // let recurringData = handleRecurringData(recurringType, recurringEnd)
+            let recurringData = [] // Default to empty array since recurring is disabled
+
             const purpose = formData.purpose.value
             const description = formData.description.value
-          onMakeBooking({ startDate, endDate, businessUnit, purpose, roomId, recurringData })
+            const title = formData.title.value
+            const participants = parseInt(formData.participants.value) || 1
+          onMakeBooking({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants })
         }}>
         <div className="content__calendar">
           <Datetime
@@ -87,6 +91,12 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
         <div className="content__form">
           <h3 className="header__heading header__heading--column">Make a Booking</h3>
           <div className="form__group form__group--margin-top">
+            <label className="form__label form__label--booking">
+              {'Meeting Title'}
+              <input type="text" name="title" className="form__input" style={{ width: '100%', boxSizing: 'border-box' }} required defaultValue="Meeting" />
+            </label>
+          </div>
+          <div className="form__group">
             <label className="form__label form__label--booking">
               {'Start time'}
               <select name="startTime" className="form__input form__input--select">
@@ -106,6 +116,7 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
               </select>
             </label>
           </div>
+          {/* Business Unit and Recurring logic commented out for US 1.3
           <div className="form__group">
             <label className="form__label form__label--booking">
               {'Business Unit'}
@@ -135,6 +146,7 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
             {'Recurring end date'}
             <input type="date" name="recurringEndDate" disabled={disableRecurring} className="form__input--date"/>
           </label>
+          */}
           <div className="form__group">
             <label className="form__label form__label--booking">
               {'Purpose'}
@@ -147,12 +159,18 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
           </div>
           <div className="form__group">
             <label className="form__label form__label--booking">
+              {'Participants'}
+              <input type="number" name="participants" defaultValue="1" min="1" className="form__input" style={{ width: '100%', boxSizing: 'border-box' }} />
+            </label>
+          </div>
+          <div className="form__group">
+            <label className="form__label form__label--booking">
               {'Description'}
               <textarea type="textarea" name="description" className="form__input--textarea"></textarea>
             </label>
           </div>
           <div className="form__group--button">
-            <Button className="button button__form--booking" text={'Submit'} />
+            <Button disabled={isSubmitting} className="button button__form--booking" text={isSubmitting ? 'Submitting...' : 'Submit'} />
             <Link to="/bookings" className="button button--alternative button__form--booking" >View availability</Link>
           </div>
         </div>

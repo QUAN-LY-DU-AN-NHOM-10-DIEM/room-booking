@@ -7,11 +7,11 @@ function FilterElement({
   onSetFloorParam,
   onToggleFeature,
   onToggleCapacity,
-  onSetAvailabilityParam,
+  onSetStatusParam,
   floorParam,
   filterParams,
   capacityParams,
-  availabilityParam,
+  statusParam,
   date
 }) {
 
@@ -81,19 +81,23 @@ function FilterElement({
             <label for="40seats" className="form__label form__label--inline">40 Seats</label>
           </div>
         </div>
-        <h4 className="form__heading form__heading--filter">Availability</h4>
-          <div onChange={(event) => onSetAvailabilityParam(event.target.value)} >
+        <h4 className="form__heading form__heading--filter">Status</h4>
+          <div onChange={(event) => onSetStatusParam(event.target.value)} >
             <div className="form_group">
-              <input type="radio" id="fullyAvailable" value="fullyAvail" name="availability" className="form__input--radio" checked={availabilityParam === 'fullyAvail' ? true : false} />
-              <label for="fullyAvailable" className="form__label form__label--inline">Fully Available</label>
+              <input type="radio" id="statusPending" value="pending" name="status" className="form__input--radio" checked={statusParam === 'pending'} />
+              <label htmlFor="statusPending" className="form__label form__label--inline">Has Pending</label>
             </div>
             <div className="form_group">
-              <input type="radio" id="partialAvailable" value="partAvail" name="availability" className="form__input--radio" checked={availabilityParam === 'partAvail' ? true : false} />
-              <label for="partialAvailable" className="form__label form__label--inline">Partially Available</label>
+              <input type="radio" id="statusAccepted" value="accepted" name="status" className="form__input--radio" checked={statusParam === 'accepted'} />
+              <label htmlFor="statusAccepted" className="form__label form__label--inline">Has Accepted</label>
             </div>
             <div className="form_group">
-              <input type="radio" id="fullyBooked" value="fullBooked" name="availability" className="form__input--radio" checked={availabilityParam === 'fullBooked' ? true : false} />
-              <label for="fullyBooked" className="form__label form__label--inline">Fully Booked</label>
+              <input type="radio" id="statusMaintenance" value="maintenance" name="status" className="form__input--radio" checked={statusParam === 'maintenance'} />
+              <label htmlFor="statusMaintenance" className="form__label form__label--inline">Has Maintenance</label>
+            </div>
+            <div className="form_group">
+              <input type="radio" id="statusAll" value="all" name="status" className="form__input--radio" checked={!statusParam || statusParam === 'all'} />
+              <label htmlFor="statusAll" className="form__label form__label--inline">All Rooms</label>
             </div>
           </div>
       </form>

@@ -2,7 +2,9 @@ require('dotenv').config()
 const Room = require('./Room')
 const moment = require('moment-timezone')
 
-Room.create([
+Room.deleteMany({})
+  .then(() => {
+    return Room.create([
   // Level 8
   {
     name: 'Room 1',
@@ -318,6 +320,7 @@ Room.create([
           .catch(err => console.error('Error saving room bookings:', err))
       }
     })
+  })
   })
   .catch((error) => {
     console.error(error)
