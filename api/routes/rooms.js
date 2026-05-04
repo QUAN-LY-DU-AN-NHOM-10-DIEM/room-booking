@@ -7,9 +7,14 @@ const { requireJWT, requireAdmin } = require('../middleware/auth')
 const router = new express.Router()
 
 router.get('/rooms', (req, res) => {
+<<<<<<< HEAD
   const filter = req.query.all === 'true' ? {} : { isDeleted: { $ne: true } }
   Room.find(filter)
     .populate('bookings.user', 'firstName lastName email')
+=======
+  Room.find()
+    // .populate('bookings.user', 'firstName lastName email')
+>>>>>>> 43b5c4c98757d968103feaa0b95098882d7c9266
     .then(rooms => {
       res.json(rooms)
     })
@@ -81,6 +86,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       },
       { new: true, runValidators: true }
     )
+      .populate('bookings.user', 'firstName lastName email')
       .then(room => {
         if (!room) {
           Room.findById(id).then(existingRoom => {
@@ -180,7 +186,8 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       })));
       
       room.save()
-        .then(savedRoom => res.status(201).json(savedRoom))
+        .then(savedRoom => savedRoom.populate('bookings.user', 'firstName lastName email'))
+        .then(populatedRoom => res.status(201).json(populatedRoom))
         .catch(error => res.status(400).json({ error: error.message || error }));
     }).catch(error => res.status(400).json({ error: error.message || error }));
   }

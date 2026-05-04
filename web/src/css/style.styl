@@ -70,10 +70,9 @@ li
   -webkit-box-shadow 1px 1px 5px 0px rgba(206,206,206,1)
   -moz-box-shadow 1px 1px 5px 0px rgba(206,206,206,1)
   box-shadow 1px 1px 5px 0px rgba(206,206,206,1)
-  display grid
-  grid-gap 1rem
-  grid-template-columns auto 1fr
-  grid-template-rows auto
+  display flex
+  flex-direction column
+  padding 3rem
   grid-column 1
   grid-row 2
 
@@ -284,10 +283,8 @@ input[type=radio]
       margin-top 1.4rem
 
 .booking__user-info
-  grid-column 2
-  grid-row 1
   line-height 1rem
-  margin 2rem 3.5rem
+  margin 0 auto 3rem auto
   padding 1rem
   text-align center
 
@@ -296,15 +293,13 @@ input[type=radio]
   width 10rem
   height 12rem
   text-align right
-  margin 3.4rem auto
+  margin 0 auto 1rem auto
 
 .booking__box
-  grid-column 1
-  grid-row 1
   background lightGrey
   display flex
   border 0.1rem solid mediumGrey
-  margin 5rem
+  margin 1rem 0 3rem 0
   width 100%
 
 .booking__innerbox--left
