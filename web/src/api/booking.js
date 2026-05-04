@@ -94,5 +94,18 @@ export function updateStateRoom(self, updatedRoom, loadMyBookings) {
       roomData: updatedRoomData,
       currentRoom: updatedRoom
     }
-  }, loadMyBookings)
+  })
+  loadMyBookings()
+}
+
+export function listPendingBookings(page = 1, limit = 10) {
+  return api.get(`/admin/bookings/pending?page=${page}&limit=${limit}`).then(res => res.data)
+}
+
+export function updateBookingStatus(roomId, bookingId, status, rejectionReason) {
+  return api.patch(`/admin/bookings/${roomId}/${bookingId}`, { status, rejectionReason }).then(res => res.data)
+}
+
+export function createMaintenance(roomId, maintenanceData) {
+  return api.post(`/admin/maintenance/${roomId}`, maintenanceData).then(res => res.data)
 }

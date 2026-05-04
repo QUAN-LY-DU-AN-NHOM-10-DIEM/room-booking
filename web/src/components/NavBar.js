@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 class NavBar extends Component {
@@ -26,6 +26,7 @@ class NavBar extends Component {
 
     const defaultAvatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'
     const avatarUrl = user && user.avatar_url ? user.avatar_url : defaultAvatar
+    const isAdmin = user && user.role === 'admin'
 
     return (
       <nav className="nav">
@@ -40,6 +41,13 @@ class NavBar extends Component {
               My Bookings
             </Link>
           </li>
+          {isAdmin && (
+            <li className="nav__item">
+              <Link to="/admin" className="nav__link">
+                Admin Dashboard
+              </Link>
+            </li>
+          )}
           <li className="nav__item">
             <div
               className="nav__avatar-container"

@@ -32,6 +32,9 @@ import Calendar from './components/Calendar'
 import BookingModal from './components/BookingModal'
 import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByStatus } from './helpers/filters'
 import { initialRoom } from './helpers/rooms'
+import AdminDashboard from './components/Admin/AdminDashboard'
+import { updateRoom, deleteRoom } from './api/rooms'
+import { updateBookingStatus } from './api/booking'
 
 class App extends Component {
   state = {
@@ -142,8 +145,53 @@ class App extends Component {
       .catch(error => console.error(error.message))
   }
 
+  // Admin Methods
+  onUpdateRoom = (id, roomData) => {
+    updateRoom(id, roomData)
+      .then(updatedRoom => {
+        alert('Room updated successfully')
+        updateStateRoom(this, updatedRoom, this.loadMyBookings)
+      })
+      .catch(err => alert(err.message))
+  }
+
+  onHideRoom = (id) => {
+    deleteRoom(id)
+      .then(() => {
+        alert('Room hidden successfully')
+        this.load() // Reload all rooms
+      })
+      .catch(err => alert(err.message))
+  }
+
+  onApproveBooking = (roomId, bookingId) => {
+    return updateBookingStatus(roomId, bookingId, 'Accepted')
+      .then(() => {
+        alert('Booking approved')
+        this.load() // Reload data
+      })
+      .catch(err => {
+        alert(err.message);
+        throw err;
+      })
+  }
+
+  onRejectBooking = (roomId, bookingId, reason) => {
+    return updateBookingStatus(roomId, bookingId, 'Rejected', reason)
+      .then(() => {
+        alert('Booking rejected')
+        this.load() // Reload data
+      })
+      .catch(err => {
+        alert(err.message);
+        throw err;
+      })
+  }
+
   setRoom = id => {
-    const room = this.state.roomData.find(room => room._id === id)
+    const { roomData } = this.state
+    if (!roomData) return
+    const room = roomData.find(room => room._id === id)
     this.setState({ currentRoom: room })
   }
 
@@ -211,21 +259,38 @@ class App extends Component {
     // return todaysBookings
   }
 
-  loadMyBookings = () => {
+  loadMyBookings = (rooms) => {
     let myBookings = []
+    const roomData = rooms || this.state.roomData
+    if (!roomData) return
+
     const userId = this.state.decodedToken.sub
     // Loop through all the rooms
-    this.state.roomData.forEach(room => {
+    roomData.forEach(room => {
       // Loop through all the bookings in 'room'
-      room.bookings.forEach(booking => {
-        if (booking.user === userId) {
-          // Push all bookings where the current userId is equal to the booking's userId into myBookings
-          booking.roomId = room._id
-          myBookings.push(booking)
-        }
-      })
+      if (room.bookings) {
+        room.bookings.forEach(booking => {
+          // booking.user might be an ID or a populated object
+          const bookingUserId = booking.user && (booking.user._id || booking.user)
+          if (bookingUserId === userId) {
+            // Add room info to the booking for display in MyBookings
+            booking.roomId = room._id
+            booking.roomName = room.name
+            myBookings.push(booking)
+          }
+        })
+      }
     })
     this.setState({ userBookings: myBookings })
+  }
+
+  onCreateRoom = (roomData) => {
+    const { createRoom } = require('./api/rooms');
+    createRoom(roomData)
+      .then(room => {
+        this.load();
+      })
+      .catch(err => alert('Failed to create room: ' + err.message));
   }
 
   render() {
@@ -254,7 +319,7 @@ class App extends Component {
 
     let filteredData = []
     const featureParams = this.state.filterParams
-    const date = this.state.currentDate
+    const date = this.state.calendarDate
 
     if (!!roomData) {
       // Send all room data and the selected floor, return filtered floors and store in filteredData
@@ -387,7 +452,7 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={decodedToken}
+                                user={signedIn ? decodedToken.sub : null}
                               />
                             </header>
                             <div className="wrapper__content">
@@ -426,7 +491,7 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={decodedToken}
+                                user={signedIn ? decodedToken.sub : null}
                               />
                             </div>
                             <div className="wrapper__content--bookings">
@@ -445,6 +510,36 @@ class App extends Component {
                     </Fragment>
                   ))} />
 
+                <Route path="/admin" exact render={requireAuth(() => (
+                  <Fragment>
+                    {!!decodedToken && decodedToken.role === 'admin' && !!roomData ? (
+                      <div className="wrapper">
+                        <div className="header header__nav header--flex">
+                          <h1 className="header__heading header__heading--main">Company Name Here (Admin)</h1>
+                          <NavBar
+                            signOut={signOut}
+                            loadMyBookings={loadMyBookings}
+                            user={decodedToken}
+                            isAdmin={true}
+                          />
+                        </div>
+                        <div className="wrapper__content">
+                          <AdminDashboard 
+                            roomData={roomData}
+                            onUpdateRoom={this.onUpdateRoom}
+                            onCreateRoom={this.onCreateRoom}
+                            onDeleteRoom={this.onHideRoom}
+                            onApprove={this.onApproveBooking}
+                            onReject={this.onRejectBooking}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <Redirect to="/bookings" />
+                    )}
+                  </Fragment>
+                ))} />
+
                 <Route render={({ location }) => <h2>
                       {' '}
                       Page Not Found: {location.pathname}{' '}
@@ -457,29 +552,34 @@ class App extends Component {
   }
 
   load() {
+    this.setState({ loading: true })
     const { decodedToken } = this.state
-    const signedIn = !!decodedToken
-
-    if (signedIn) {
-      // display loading page
-      this.setState({ loading: true })
-      // load all of the rooms from the database
-      listRooms()
-        .then(rooms => {
-          this.setState({ roomData: rooms })
-          // load the current user's bookings
-          this.loadMyBookings()
-          // the state's current room defaults to first room
-          const room = this.state.roomData[0]
-          this.setRoom(room._id)
-          // toggle loading page off
-          this.setState({ loading: false })
+    const isAdmin = decodedToken && decodedToken.role === 'admin'
+    
+    listRooms(isAdmin)
+      .then(rooms => {
+        const { decodedToken } = this.state
+        const signedIn = !!decodedToken
+        
+        if (signedIn) {
+          this.loadMyBookings(rooms)
+        }
+        
+        let currentRoom = null
+        if (rooms && rooms.length > 0) {
+          currentRoom = rooms[0]
+        }
+        
+        this.setState({ 
+          roomData: rooms,
+          currentRoom: currentRoom,
+          loading: false 
         })
-        .catch(error => {
-          console.error('Error loading room data', error)
-          this.setState({ error })
-        })
-    }
+      })
+      .catch(error => {
+        console.error('Error loading room data', error)
+        this.setState({ error, loading: false })
+      })
   }
 
   // When the App first renders

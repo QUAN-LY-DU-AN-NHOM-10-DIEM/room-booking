@@ -38,12 +38,17 @@ const BookingModal = props => {
       <h3 className="modal__title">Booking Details</h3>
       {booking && (
         <div className="modal__boday">
-          <p className="modal__paragraph"><strong>Title: </strong>{booking['title']}</p>
-          <p className="modal__paragraph"><strong>Participants: </strong>{booking['participants'] || 1}</p>
-          <p className="modal__paragraph"><strong>Name: </strong>{booking.user && booking.user.firstName ? `${booking.user.firstName} ${booking.user.lastName}` : 'Unknown'}</p>
-          <p className="modal__paragraph"><strong>Email: </strong>{booking.user && booking.user.email ? booking.user.email : 'Unknown'}</p>
-          <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(booking.roomId, props.roomData).name}{', Level '}
-          {findRoomInfo(booking.roomId, props.roomData).floor}</p>
+          <p className="modal__paragraph"><strong>Title: </strong>{props.selectedBooking['title']}</p>
+          <p className="modal__paragraph">
+            <strong>Name: </strong>
+            {props.selectedBooking.user ? `${props.selectedBooking.user.firstName} ${props.selectedBooking.user.lastName}` : 'N/A'}
+          </p>
+          <p className="modal__paragraph">
+            <strong>Email: </strong>
+            {props.selectedBooking.user ? props.selectedBooking.user.email : 'N/A'}
+          </p>
+          <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(props.selectedBooking.roomId, props.roomData).name}{', Level '}
+          {findRoomInfo(props.selectedBooking.roomId, props.roomData).floor}</p>
           <p className="modal__paragraph"><strong>Time: </strong>{`${momentTimezone
               .tz(booking['bookingStart'], 'Asia/Ho_Chi_Minh')
             .format('h.mma')} to ${momentTimezone

@@ -15,8 +15,8 @@ const bookingSchema = new Schema({
   roomId: { type: Schema.ObjectId, ref: 'Room' },
   title: { type: String, required: true, default: 'Meeting' },
   participants: { type: Number, required: true, default: 1 },
-  status: { type: String, enum: ['Pending', 'Accepted', 'Failed'], default: 'Pending' },
-  rejectReason: { type: String }
+  status: { type: String, enum: ['Pending', 'Accepted', 'Failed', 'Rejected', 'Maintenance'], default: 'Pending' },
+  rejectionReason: String
 })
 
 // Validation to ensure a room cannot be double-booked
@@ -43,6 +43,9 @@ bookingSchema.path('bookingStart').validate(function(value) {
   // Locate the room document containing the bookings
   return Room.findById(roomId)
     .then(room => {
+      if (room.isMaintenance) {
+        throw new Error('This room is currently under maintenance and cannot be booked.');
+      }
       // Loop through each existing booking and return false if there is a clash
       return room.bookings.every(booking => {
         
@@ -99,6 +102,8 @@ const roomSchema = new Schema({
     opWalls: { type: Boolean, default: false },
     whiteBoard: { type: Boolean, default: false }
   },
+  isDeleted: { type: Boolean, default: false },
+  isMaintenance: { type: Boolean, default: false },
   bookings: [bookingSchema]
 })
 
