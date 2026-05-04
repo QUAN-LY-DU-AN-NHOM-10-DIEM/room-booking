@@ -28,7 +28,7 @@ router.post('/rooms', requireJWT, (req, res) => {
 
 // Function to convert UTC JS Date object to a Moment.js object in AEST
 const dateAEST = date => {
-  return momentTimezone(date).tz('Australia/Sydney')
+  return momentTimezone(date).tz('Asia/Ho_Chi_Minh')
 }
 
 // Function to calculate the duration of the hours between the start and end of the booking
@@ -48,28 +48,51 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
 
   // If the recurring array is empty, the booking is not recurring
   if (req.body.recurring.length === 0) {
-    Room.findByIdAndUpdate(
-      id,
+    const bookingStartDate = new Date(req.body.bookingStart);
+    const bookingEndDate = new Date(req.body.bookingEnd);
+
+    Room.findOneAndUpdate(
       {
-        $addToSet: {
+        _id: id,
+        bookings: {
+          $not: {
+            $elemMatch: {
+              status: { $in: ['Pending', 'Accepted'] },
+              bookingStart: { $lt: bookingEndDate },
+              bookingEnd: { $gt: bookingStartDate }
+            }
+          }
+        }
+      },
+      {
+        $push: {
           bookings: {
             user: req.user,
-            // The hour on which the booking starts, calculated from 12:00AM as time = 0
             startHour: dateAEST(req.body.bookingStart).format('H.mm'),
-            // The duration of the booking in decimal format
             duration: durationHours(req.body.bookingStart, req.body.bookingEnd),
-            // Spread operator for remaining attributes
+            status: 'Pending',
+            title: req.body.title || 'Meeting',
+            participants: req.body.participants || 1,
             ...req.body
           }
         }
       },
-      { new: true, runValidators: true, context: 'query' }
+      { new: true, runValidators: true }
     )
       .then(room => {
-        res.status(201).json(room)
+        if (!room) {
+          Room.findById(id).then(existingRoom => {
+            if (!existingRoom) {
+              return res.status(404).json({ error: 'Room not found' });
+            }
+            return res.status(409).json({ error: 'Khung giờ này vừa được người khác đặt.' });
+          });
+        } else {
+          res.status(201).json(room)
+        }
       })
       .catch(error => {
-        res.status(400).json({ error })
+        res.status(400).json({ error: error.message || error })
       })
 
   // If the booking is a recurring booking
@@ -85,10 +108,10 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
     let recurringBookings = [ firstBooking ]
     
     // A Moment.js object to track each date in the recurring range, initialised with the first date
-    let bookingDateTracker = momentTimezone(firstBooking.bookingStart).tz('Australia/Sydney')
+    let bookingDateTracker = momentTimezone(firstBooking.bookingStart).tz('Asia/Ho_Chi_Minh')
     
     // A Moment.js date object for the final booking date in the recurring booking range - set to one hour ahead of the first booking - to calculate the number of days/weeks/months between the first and last bookings when rounded down
-    let lastBookingDate = momentTimezone(firstBooking.recurring[0]).tz('Australia/Sydney')
+    let lastBookingDate = momentTimezone(firstBooking.recurring[0]).tz('Asia/Ho_Chi_Minh')
     lastBookingDate.hour(bookingDateTracker.hour() + 1)
     
     // The number of subsequent bookings in the recurring booking date range 
@@ -115,7 +138,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
         let newBooking = Object.assign({}, firstBooking)
         
         // Calculate the end date/time of the new booking by adding the number of units to the first booking's end date/time
-        let firstBookingEndDate = momentTimezone(firstBooking.bookingEnd).tz('Australia/Sydney')
+        let firstBookingEndDate = momentTimezone(firstBooking.bookingEnd).tz('Asia/Ho_Chi_Minh')
         let proposedBookingDateEnd = firstBookingEndDate.add(i + 1, units)
         
         // Update the new booking object's start and end dates
@@ -128,25 +151,36 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
     }
     
 
-    // Find the relevant room and save the bookings
-    Room.findByIdAndUpdate(
-      id,
-      {
-        $push: {
-          bookings: {
-            $each:
-            recurringBookings
-          }
-        }
-      },
-      { new: true, runValidators: true, context: 'query' }
-    )
-      .then(room => {
-        res.status(201).json(room)
-      })
-      .catch(error => {
-        res.status(400).json({ error })
-      })
+    // Handle concurrency for recurring bookings
+    Room.findById(id).then(room => {
+      if (!room) return res.status(404).json({ error: 'Room not found' });
+      
+      const hasClash = recurringBookings.some(newBooking => {
+        return room.bookings.some(existing => {
+          if (['Failed'].includes(existing.status)) return false;
+          const eStart = new Date(existing.bookingStart);
+          const eEnd = new Date(existing.bookingEnd);
+          const nStart = new Date(newBooking.bookingStart);
+          const nEnd = new Date(newBooking.bookingEnd);
+          return (nStart < eEnd && nEnd > eStart);
+        });
+      });
+
+      if (hasClash) {
+        return res.status(409).json({ error: 'Khung giờ này vừa được người khác đặt.' });
+      }
+
+      room.bookings.push(...recurringBookings.map(b => ({
+        ...b, 
+        status: 'Pending',
+        title: req.body.title || 'Meeting',
+        participants: req.body.participants || 1
+      })));
+      
+      room.save()
+        .then(savedRoom => res.status(201).json(savedRoom))
+        .catch(error => res.status(400).json({ error: error.message || error }));
+    }).catch(error => res.status(400).json({ error: error.message || error }));
   }
 })
 

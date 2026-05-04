@@ -12,7 +12,10 @@ const bookingSchema = new Schema({
   recurring: [],
   businessUnit: { type: String, required: true },
   purpose: { type: String, required: true },
-  roomId: { type: Schema.ObjectId, ref: 'Room' }
+  roomId: { type: Schema.ObjectId, ref: 'Room' },
+  title: { type: String, required: true, default: 'Meeting' },
+  participants: { type: Number, required: true, default: 1 },
+  status: { type: String, enum: ['Pending', 'Accepted', 'Failed'], default: 'Pending' }
 })
 
 // Validation to ensure a room cannot be double-booked
@@ -57,6 +60,31 @@ bookingSchema.path('bookingStart').validate(function(value) {
     })
 }, `{REASON}`)
 
+// Rule 1: Not in past
+bookingSchema.path('bookingStart').validate(function(value) {
+  if (value < new Date()) {
+    throw new Error('Booking cannot be in the past');
+  }
+  return true;
+}, 'Past booking error');
+
+// Rule 2: Max 30 days ahead
+bookingSchema.path('bookingStart').validate(function(value) {
+  const thirtyDaysFromNow = new Date();
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+  if (value > thirtyDaysFromNow) {
+    throw new Error('Booking cannot be more than 30 days in advance');
+  }
+  return true;
+}, 'Future booking error');
+
+// Rule 3: 30 min to 4 hours (duration is in hours)
+bookingSchema.path('duration').validate(function(value) {
+  if (value < 0.5 || value > 4) {
+    throw new Error('Booking duration must be between 30 minutes and 4 hours');
+  }
+  return true;
+}, 'Duration error');
 
 const roomSchema = new Schema({
   name: { type: String, index: true, required: true },

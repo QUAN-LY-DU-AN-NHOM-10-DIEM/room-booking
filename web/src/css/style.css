@@ -4,7 +4,6 @@
   border: 0.1rem solid #cecece;
   border-collapse: collapse !important;
   border-spacing: 0 0 !important;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   margin: 0 auto;
   padding: 0;
@@ -79,8 +78,6 @@
 .form__grid {
   display: grid;
   grid-gap: 1rem;
-  grid-template-columns: -webkit-min-content -webkit-max-content max-content;
-  grid-template-columns: -moz-min-content -moz-max-content max-content;
   grid-template-columns: min-content max-content max-content;
   grid-template-rows: 1fr auto;
   grid-column: 1/2;
@@ -101,7 +98,6 @@
 }
 .content__form {
   background: #fafafa;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   grid-column: 3;
   grid-row: 1;
@@ -110,14 +106,12 @@
   width: 100%;
 }
 input[type=checkbox] {
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
   height: 1.6rem;
   width: 1.6rem;
 }
 input[type=radio] {
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
   height: 1.6rem;
   width: 1.6rem;
 }
@@ -148,6 +142,13 @@ input[type=radio] {
   border: 0.1rem solid #ed1c24;
   color: #ed1c24;
 }
+.button:disabled {
+  background: #1c1c1c;
+  border: 0.1rem solid #1c1c1c;
+  color: #fafafa;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .button--alternative {
   background: #fafafa;
   border: 0.1rem solid #1c1c1c;
@@ -167,7 +168,6 @@ input[type=radio] {
 }
 .rdt {
   background: #fafafa;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   font-size: 1.6rem;
   width: 30rem;
@@ -275,6 +275,7 @@ rdtNext span {
   display: block;
   -webkit-touch-callout: none /* iOS Safari */;
   -webkit-user-select: none /* Chrome/Safari/Opera */;
+  -khtml-user-select: none /* Konqueror */;
   -moz-user-select: none /* Firefox */;
   -ms-user-select: none /* Internet Explorer/Edge */;
   user-select: none;
@@ -313,12 +314,10 @@ td.rdtYear:hover {
   width: 23rem;
 }
 .key__group {
-  display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+      align-items: center;
 }
 .key__description {
   display: inline-block;
@@ -348,16 +347,12 @@ td.rdtYear:hover {
   background: #85ffc7;
 }
 .ReactModalPortal .ReactModal__Overlay {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
+  -ms-flex-align: center;
+      align-items: center;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-transition: opacity 200ms ease-in-out;
+  -ms-flex-pack: center;
+      justify-content: center;
   transition: opacity 200ms ease-in-out;
 }
 .ReactModalPortal .ReactModal__Overlay .ReactModal__Overlay--after-open .overlay {
@@ -409,7 +404,6 @@ td.rdtYear:hover {
   border-collapse: collapse !important;
   border-spacing: 0 0 !important;
   color: #1c1c1c;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   margin: 1rem;
   padding: 0;
@@ -433,7 +427,6 @@ td.rdtYear:hover {
 .table__row:hover {
   background: #f4f4f4;
   border: 0.1rem solid #cecece;
-  -webkit-box-shadow: 2px 2px 5px 0px #cecece;
   box-shadow: 2px 2px 5px 0px #cecece;
 }
 .table__row td {
@@ -455,7 +448,6 @@ td.rdtYear:hover {
   background: #f4f4f4;
 }
 .table__row--subheader:hover {
-  -webkit-box-shadow: unset;
   box-shadow: unset;
 }
 .table__data--asset {
@@ -630,7 +622,6 @@ li {
 }
 .wrapper__form {
   background: #fafafa;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   display: grid;
   grid-gap: 1rem;
@@ -659,7 +650,6 @@ li {
 }
 .wrapper__bookings {
   background: #fafafa;
-  -webkit-box-shadow: 1px 1px 5px 0px #cecece;
   box-shadow: 1px 1px 5px 0px #cecece;
   display: grid;
   grid-gap: 1rem;
@@ -670,7 +660,6 @@ li {
 }
 .header {
   background: #1c1c1c;
-  -webkit-box-shadow: 0px 2px 5px 0px #cecece;
   box-shadow: 0px 2px 5px 0px #cecece;
   grid-area: header;
   grid-column: 1/-1;
@@ -679,15 +668,12 @@ li {
   height: 10rem;
 }
 .header--flex {
-  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: center;
+      align-items: center;
 }
 .header__page {
   grid-column: 1/-1;
@@ -736,7 +722,6 @@ li {
 }
 .sidebar__box {
   background: #fafafa;
-  -webkit-box-shadow: 1px 1px 5px 0px #cecece;
   box-shadow: 1px 1px 5px 0px #cecece;
   margin: 3rem auto;
   width: 30rem;
@@ -818,7 +803,6 @@ li {
   margin: 0.5rem auto;
   padding: 0.8rem 3.8rem 0.8rem 1rem;
   width: 100%;
-  -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, #a5a5a5 50%), linear-gradient(135deg, #a5a5a5 50%, transparent 50%), linear-gradient(to right, #a5a5a5, #a5a5a5);
@@ -833,8 +817,7 @@ li {
 .form__input--date {
   background: #f4f4f4;
   border: 0.1rem solid #a5a5a5;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   color: #1c1c1c;
   display: block;
   font-family: "raleway", sans-serif;
@@ -859,14 +842,12 @@ input:focus {
   outline: none;
 }
 input[type=checkbox] {
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
   height: 1.6rem;
   width: 1.6rem;
 }
 input[type=radio] {
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
   height: 1.6rem;
   width: 1.6rem;
 }
@@ -911,7 +892,6 @@ input[type=radio] {
   grid-column: 1;
   grid-row: 1;
   background: #f4f4f4;
-  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   border: 0.1rem solid #cecece;
@@ -935,15 +915,4 @@ input[type=radio] {
   margin: 3rem auto;
   padding-top: 4.4rem;
   width: 20%;
-}
-
-.loading_animation {
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top:0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
 }

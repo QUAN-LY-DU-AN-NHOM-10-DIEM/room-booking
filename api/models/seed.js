@@ -1,7 +1,9 @@
 require('dotenv').config()
 const Room = require('./Room')
 
-Room.create([
+Room.deleteMany({})
+  .then(() => {
+    return Room.create([
   // Level 8
   {
     name: 'Room 1',
@@ -265,8 +267,9 @@ Room.create([
     }
   }
 ])
-  .then((rooms) => {
-    console.log(`Created ${rooms.length} rooms.`)
+      .then((rooms) => {
+        console.log(`Created ${rooms.length} rooms.`)
+      })
   })
   .catch((error) => {
     console.error(error)

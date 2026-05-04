@@ -47,7 +47,8 @@ class App extends Component {
     checked: null,
     currentRoom: null,
     error: null,
-    disableRecurring: true
+    disableRecurring: true,
+    isSubmitting: false
   }
 
   // Pass supplied first name, lastname, email & password to the signUp function, returns the user's token
@@ -85,26 +86,32 @@ class App extends Component {
   }
 
   // Makes a booking by updating the database and the React state
-  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData }) => {
-    const bookingData = { startDate, endDate, businessUnit, purpose, roomId }
+  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }) => {
+    this.setState({ isSubmitting: true })
     const existingBookings = this.state.currentRoom.bookings
 
     // Check if there is a clash and, if not, save the new booking to the database
     try {
       makeBooking(
-        { startDate, endDate, businessUnit, purpose, roomId, recurringData },
+        { startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants },
         existingBookings
       )
         .then(updatedRoom => {
+          this.setState({ isSubmitting: false })
           // If the new booking is successfully saved to the database
-          alert(`${updatedRoom.name} successfully booked.`)
+          alert(`Your request for ${updatedRoom.name} was submitted. Status: Pending.`)
           updateStateRoom(this, updatedRoom, this.loadMyBookings)
         })
+        .catch(err => {
+          this.setState({ isSubmitting: false })
+          // If there is an error during submission
+          console.error(err)
+          alert(err.message || 'An error occurred while booking.')
+        })
     } catch (err) {
+      this.setState({ isSubmitting: false })
       // If there is a booking clash and the booking could not be saved
-      alert(
-        'Your booking could not be saved. Please ensure it does not clash with an existing booking and that it is a valid time in the future.'
-      )
+      alert(err.message || 'Your booking could not be saved. Please ensure it does not clash with an existing booking and that it is a valid time in the future.')
       console.log(err)
     }
   }
@@ -222,6 +229,7 @@ class App extends Component {
       floorParam,
       availabilityParam,
       disableRecurring,
+      isSubmitting,
       loading
     } = this.state
     const signedIn = !!decodedToken
@@ -356,6 +364,7 @@ class App extends Component {
                                 onMakeBooking={this.onMakeBooking}
                                 date={calendarDate}
                                 disableRecurring={disableRecurring}
+                                isSubmitting={isSubmitting}
                                 updateCalendar={setCalendarDate}
                                 onShowBooking={this.onShowBooking}
                                 onToggleRecurring={this.onToggleRecurring}
