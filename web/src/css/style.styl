@@ -123,6 +123,45 @@ li
         margin 0 0
         width 28rem
 
+.nav__avatar-container
+  position relative
+  cursor pointer
+  display flex
+  align-items center
+  margin-left 4rem
+
+.nav__avatar
+  width 4.5rem
+  height 4.5rem
+  border-radius 50%
+  object-fit cover
+  border 0.2rem solid lightGrey
+  transition transform 0.2s
+  &:hover
+    transform scale(1.1)
+
+.nav__dropdown
+  position absolute
+  top 6rem
+  right 0
+  background darkGrey
+  box-shadow 0px 4px 10px rgba(0,0,0,0.3)
+  border-radius 0.4rem
+  z-index 1000
+  min-width 14rem
+  padding 0.5rem 0
+
+.nav__dropdown-item
+  padding 1.2rem 2rem
+  color lightGrey
+  font-size 1.6rem
+  font-weight 600
+  text-align left
+  cursor pointer
+  transition background 0.2s
+  &:hover
+    background #333
+
 .sidebar
   grid-area sidebar
   grid-column 1
@@ -161,6 +200,7 @@ li
   margin 0 auto
   &--button // button group
     margin 2rem 0 3rem 0
+    text-align center
   &--margin-top
     margin-top 3rem
 

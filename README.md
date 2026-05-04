@@ -131,6 +131,96 @@ yarn start
 
 Open in your browser and navigate to http://localhost:3000. You access the back-end on http://localhost:7000.
 
+### Run guide (updated)
+
+This section provides a full local run flow for the current codebase, including Google Staff authentication.
+
+#### 1. Configure environment variables (API)
+
+Create file `api/.env` with values similar to:
+
+```env
+MONGO_URI=mongodb://127.0.0.1:27017/room-booking
+HOST=localhost
+PORT=7000
+
+JWT_SECRET=replace-with-strong-secret
+JWT_ALGORITHM=HS256
+JWT_EXPIRES_IN=7d
+
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+ALLOWED_STAFF_DOMAIN=hcmut.edu.vn
+```
+
+Notes:
+- `GOOGLE_CLIENT_ID` is required for `POST /api/v1/auth/google`.
+- `ALLOWED_STAFF_DOMAIN` defaults to `hcmut.edu.vn` if not provided.
+
+#### 2. Install dependencies
+
+API:
+
+```bash
+cd api
+npm install
+```
+
+Web:
+
+```bash
+cd web
+npm install
+```
+
+#### 3. Seed and migrate database
+
+From `api` folder:
+
+```bash
+npm run seed
+npm run migrate:up
+```
+
+If needed, rollback indexes created by migration:
+
+```bash
+npm run migrate:down
+```
+
+#### 4. Start services
+
+Start API server (port 7000):
+
+```bash
+cd api
+npm run dev
+```
+
+Start web app (port 3000) in another terminal:
+
+```bash
+cd web
+npm start
+```
+
+#### 5. Verify Google Staff login API
+
+Call:
+
+```http
+POST /api/v1/auth/google
+Content-Type: application/json
+
+{
+  "id_token": "<google-id-token-from-client>"
+}
+```
+
+Expected behavior:
+- Returns 200 with internal JWT if email ends with `@hcmut.edu.vn`.
+- Returns 403 if email is outside allowed domain.
+- Returns 401 if Google token is invalid/expired.
+
 ## About project
 You are to design, build, deploy, and present an application built for a real world customer.
 

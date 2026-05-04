@@ -1,16 +1,28 @@
 // For storing the logged in user's credentails across page refreshes
 import decodeJWT from 'jwt-decode'
 const key = 'userToken'
+const refreshKey = 'refreshToken'
 
 export function rememberToken(token) {
   if (token) {
-    // store the token
     localStorage.setItem(key, token)
   }
   else {
-    // Clear token from local storage
     localStorage.removeItem(key)
   }
+}
+
+export function rememberRefreshToken(token) {
+  if (token) {
+    localStorage.setItem(refreshKey, token)
+  }
+  else {
+    localStorage.removeItem(refreshKey)
+  }
+}
+
+export function getRefreshToken() {
+  return localStorage.getItem(refreshKey)
 }
 
 export function getValidToken() {

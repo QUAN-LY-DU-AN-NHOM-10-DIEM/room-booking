@@ -1,16 +1,42 @@
 const passport = require('passport')
 const JWT = require('jsonwebtoken')
 const PassportJWT = require('passport-jwt')
+const { OAuth2Client } = require('google-auth-library')
 const User = require('../models/User')
+const AdminWhitelist = require('../models/AdminWhitelist')
+const RefreshToken = require('../models/RefreshToken')
+const { randomUUID } = require('crypto')
 
 const jwtSecret = process.env.JWT_SECRET
 const jwtAlgorithm = process.env.JWT_ALGORITHM
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN
+const googleClientId = process.env.GOOGLE_CLIENT_ID
+const allowedStaffDomain = (
+  process.env.ALLOWED_STAFF_DOMAIN || 'hcmut.edu.vn'
+).toLowerCase()
+const googleClient = googleClientId ? new OAuth2Client(googleClientId) : null
 
 passport.use(User.createStrategy())
 
-const signUp = (req, res, next) => {
+const toObjectId = user => (user._id || user.id).toString()
 
+const normalizeFullName = (firstName, lastName, fallback) => {
+  const computedName = [firstName, lastName]
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+  return computedName || fallback
+}
+
+const toClientUser = user => ({
+  id: user.id,
+  email: user.email,
+  full_name: user.full_name,
+  avatar_url: user.avatar_url,
+  role: user.role
+})
+
+const signUp = (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     res.status(400).send('No username or password provided.')
   }
@@ -18,13 +44,18 @@ const signUp = (req, res, next) => {
   const user = new User({
     email: req.body.email,
     firstName: req.body.firstName,
-    lastName: req.body.lastName
+    lastName: req.body.lastName,
+    full_name: normalizeFullName(
+      req.body.firstName,
+      req.body.lastName,
+      req.body.email
+    ),
+    provider: 'local'
   })
 
   User.register(user, req.body.password, (error, user) => {
     if (error) {
       next(error)
-      return
     }
   })
 
@@ -32,20 +63,182 @@ const signUp = (req, res, next) => {
   next()
 }
 
+function signInWithGoogle(req, res, next) {
+  if (!googleClient) {
+    res.status(500).json({
+      error: {
+        message: 'GOOGLE_CLIENT_ID is not configured.'
+      }
+    })
+    return
+  }
+
+  const idToken = req.body.id_token
+  if (!idToken) {
+    res.status(400).json({
+      error: {
+        message: 'id_token is required.'
+      }
+    })
+    return
+  }
+
+  googleClient
+    .verifyIdToken({
+      idToken,
+      audience: googleClientId
+    })
+    .then(ticket => {
+      const payload = ticket.getPayload()
+
+      if (!payload || !payload.email || !payload.email_verified) {
+        res.status(401).json({
+          error: {
+            message: 'Google ID token is invalid or email is not verified.'
+          }
+        })
+        return null
+      }
+
+      const normalizedEmail = payload.email.toLowerCase()
+      const allowedSuffix = `@${allowedStaffDomain}`
+      if (!normalizedEmail.endsWith(allowedSuffix)) {
+        res.status(403).json({
+          error: {
+            message: `Only @${allowedStaffDomain} staff accounts are allowed.`
+          }
+        })
+        return null
+      }
+
+      const firstName = payload.given_name || ''
+      const lastName = payload.family_name || ''
+      const fullName =
+        payload.name || normalizeFullName(firstName, lastName, normalizedEmail)
+
+      return User.findOne({ email: normalizedEmail })
+        .then(user => {
+          if (!user) {
+            return User.create({
+              email: normalizedEmail,
+              firstName,
+              lastName,
+              full_name: fullName,
+              avatar_url: payload.picture,
+              provider: 'google',
+              google_sub: payload.sub,
+              role: 'staff',
+              last_login_at: new Date()
+            })
+          }
+
+          user.firstName = firstName || user.firstName
+          user.lastName = lastName || user.lastName
+          user.full_name = fullName || user.full_name
+          user.avatar_url = payload.picture || user.avatar_url
+          user.provider = 'google'
+          user.google_sub = payload.sub
+          user.role = user.role || 'staff'
+          user.last_login_at = new Date()
+
+          // Check if email is in admin whitelist
+          return AdminWhitelist.findOne({ email: normalizedEmail })
+            .then(whitelistEntry => {
+              if (whitelistEntry) {
+                user.role = 'admin'
+              }
+              return user.save()
+            })
+        })
+        .then(user => {
+          if (!user) {
+            return
+          }
+
+          req.user = user
+          req.authResponseUser = toClientUser(user)
+          next()
+        })
+    })
+    .catch(() => {
+      res.status(401).json({
+        error: {
+          message: 'Google ID token verification failed.'
+        }
+      })
+    })
+}
+
 const signJWTForUser = (req, res) => {
   const user = req.user
-  const token = JWT.sign(
-    {
-      email: user.email
-    },
-    jwtSecret,
-    {
-      algorithm: jwtAlgorithm,
-      expiresIn: jwtExpiresIn,
-      subject: user._id.toString()
+  const payload = {
+    email: user.email,
+    role: user.role,
+    full_name: user.full_name,
+    avatar_url: user.avatar_url
+  }
+
+  const token = JWT.sign(payload, jwtSecret, {
+    algorithm: jwtAlgorithm,
+    expiresIn: jwtExpiresIn,
+    subject: toObjectId(user)
+  })
+
+  // Generate refresh token
+  const refreshTokenValue = randomUUID()
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + 7) // Refresh token valid for 7 days
+
+  RefreshToken.create({
+    token: refreshTokenValue,
+    user: user._id,
+    expires_at: expiresAt
+  }).then(() => {
+    const response = {
+      token,
+      refresh_token: refreshTokenValue
     }
-  )
-  res.json({ token })
+    if (req.authResponseUser) {
+      response.user = req.authResponseUser
+    }
+    res.json(response)
+  }).catch(error => {
+    res.status(500).json({ error: 'Failed to create refresh token' })
+  })
+}
+
+const refresh = (req, res) => {
+  const { refresh_token } = req.body
+  if (!refresh_token) {
+    return res.status(400).json({ error: 'Refresh token is required' })
+  }
+
+  RefreshToken.findOne({ token: refresh_token })
+    .populate('user')
+    .then(rt => {
+      if (!rt || rt.expires_at < new Date()) {
+        return res.status(401).json({ error: 'Invalid or expired refresh token' })
+      }
+
+      const user = rt.user
+      const payload = {
+        email: user.email,
+        role: user.role,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url
+      }
+
+      const newToken = JWT.sign(payload, jwtSecret, {
+        algorithm: jwtAlgorithm,
+        expiresIn: jwtExpiresIn,
+        subject: toObjectId(user)
+      })
+
+      res.json({ token: newToken })
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Internal server error' })
+    })
 }
 
 passport.use(
@@ -74,7 +267,9 @@ passport.use(
 module.exports = {
   initialize: passport.initialize(),
   signUp,
+  signInWithGoogle,
   signIn: passport.authenticate('local', { session: false }),
   requireJWT: passport.authenticate('jwt', { session: false }),
-  signJWTForUser
+  signJWTForUser,
+  refresh
 }

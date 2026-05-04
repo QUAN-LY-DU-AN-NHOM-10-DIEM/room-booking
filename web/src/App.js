@@ -21,6 +21,7 @@ import SignUpForm from './components/SignUpForm'
 
 import {
   signIn,
+  signInWithGoogle,
   signOut,
   signUp
 } from './api/auth'
@@ -48,7 +49,8 @@ class App extends Component {
     currentRoom: null,
     error: null,
     disableRecurring: true,
-    isSubmitting: false
+    isSubmitting: false,
+    showSignUp: false
   }
 
   // Pass supplied first name, lastname, email & password to the signUp function, returns the user's token
@@ -62,6 +64,15 @@ class App extends Component {
   onSignIn = ({ email, password }) => {
     signIn({ email, password }).then(decodedToken => {
       this.setState({ decodedToken })
+    })
+  }
+
+  // Pass Google ID token from the client Google button to API sign in endpoint
+  onGoogleSignIn = ({ idToken }) => {
+    signInWithGoogle({ idToken }).then(decodedToken => {
+      if (decodedToken) {
+        this.setState({ decodedToken })
+      }
     })
   }
 
@@ -231,7 +242,8 @@ class App extends Component {
       statusParam,
       disableRecurring,
       isSubmitting,
-      loading
+      loading,
+      showSignUp
     } = this.state
     const signedIn = !!decodedToken
     const signOut = this.onSignOut
@@ -268,12 +280,32 @@ class App extends Component {
                 <Route path="/" exact render={() => (!!decodedToken && signedIn ?
                   (<Redirect to="/bookings" />) :
                   (<div className="wrapper__form">
-                      <div className="header__page">
-                        <h2 className="header__heading header__heading--sub--alt">Sign in with email</h2>
-                      </div>
-                      <SignInForm onSignIn={this.onSignIn} />
-                      <h3 className="header__heading header__heading--sub--alt">Don't have an account?</h3>
-                      <SignUpForm onSignUp={this.onSignUp} />
+                      {showSignUp ? (
+                        <Fragment>
+                          <div className="header__page">
+                            <h2 className="header__heading header__heading--sub--alt">Sign up</h2>
+                          </div>
+                          <SignUpForm onSignUp={this.onSignUp} />
+                          <h3 className="header__heading header__heading--sub--alt">Already have an account?</h3>
+                          <div className="form__group--button">
+                            <button className="button button--alternative" onClick={() => this.setState({ showSignUp: false })}>Sign in</button>
+                          </div>
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          <div className="header__page">
+                            <h2 className="header__heading header__heading--sub--alt">Sign in with email</h2>
+                          </div>
+                          <SignInForm
+                            onSignIn={this.onSignIn}
+                            onGoogleSignIn={this.onGoogleSignIn}
+                          />
+                          <h3 className="header__heading header__heading--sub--alt">Don't have an account?</h3>
+                          <div className="form__group--button">
+                            <button className="button button--alternative" onClick={() => this.setState({ showSignUp: true })}>Sign up</button>
+                          </div>
+                        </Fragment>
+                      )}
                     </div>
                   )
                 )} />
@@ -292,7 +324,7 @@ class App extends Component {
                           <NavBar
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
-                            user={signedIn ? decodedToken.sub : null}
+                            user={decodedToken}
                           />
                         </div>
                         <div className="wrapper__content">
@@ -355,7 +387,7 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}
+                                user={decodedToken}
                               />
                             </header>
                             <div className="wrapper__content">
@@ -394,7 +426,7 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}
+                                user={decodedToken}
                               />
                             </div>
                             <div className="wrapper__content--bookings">
