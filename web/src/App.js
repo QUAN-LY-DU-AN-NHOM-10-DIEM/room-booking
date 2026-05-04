@@ -16,12 +16,12 @@ import Key from './components/Key'
 import MyBookings from './components/MyBookings'
 import NavBar from './components/NavBar'
 import RoomsList from './components/RoomsList'
-import RoomStats from './components/RoomStats'
 import SignInForm from './components/SignInForm'
 import SignUpForm from './components/SignUpForm'
 
 import {
   signIn,
+  signInWithGoogle,
   signOut,
   signUp
 } from './api/auth'
@@ -32,6 +32,9 @@ import Calendar from './components/Calendar'
 import BookingModal from './components/BookingModal'
 import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByStatus } from './helpers/filters'
 import { initialRoom } from './helpers/rooms'
+import AdminDashboard from './components/Admin/AdminDashboard'
+import { updateRoom, deleteRoom } from './api/rooms'
+import { updateBookingStatus } from './api/booking'
 
 class App extends Component {
   state = {
@@ -49,7 +52,8 @@ class App extends Component {
     currentRoom: null,
     error: null,
     disableRecurring: true,
-    isSubmitting: false
+    isSubmitting: false,
+    showSignUp: false
   }
 
   // Pass supplied first name, lastname, email & password to the signUp function, returns the user's token
@@ -63,6 +67,15 @@ class App extends Component {
   onSignIn = ({ email, password }) => {
     signIn({ email, password }).then(decodedToken => {
       this.setState({ decodedToken })
+    })
+  }
+
+  // Pass Google ID token from the client Google button to API sign in endpoint
+  onGoogleSignIn = ({ idToken }) => {
+    signInWithGoogle({ idToken }).then(decodedToken => {
+      if (decodedToken) {
+        this.setState({ decodedToken })
+      }
     })
   }
 
@@ -87,7 +100,7 @@ class App extends Component {
   }
 
   // Makes a booking by updating the database and the React state
-  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }) => {
+  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }, history) => {
     this.setState({ isSubmitting: true })
     const existingBookings = this.state.currentRoom.bookings
 
@@ -102,6 +115,7 @@ class App extends Component {
           // If the new booking is successfully saved to the database
           alert(`Your request for ${updatedRoom.name} was submitted. Status: Pending.`)
           updateStateRoom(this, updatedRoom, this.loadMyBookings)
+          if (history) history.push('/bookings')
         })
         .catch(err => {
           this.setState({ isSubmitting: false })
@@ -131,8 +145,53 @@ class App extends Component {
       .catch(error => console.error(error.message))
   }
 
+  // Admin Methods
+  onUpdateRoom = (id, roomData) => {
+    updateRoom(id, roomData)
+      .then(updatedRoom => {
+        alert('Room updated successfully')
+        updateStateRoom(this, updatedRoom, this.loadMyBookings)
+      })
+      .catch(err => alert(err.message))
+  }
+
+  onHideRoom = (id) => {
+    deleteRoom(id)
+      .then(() => {
+        alert('Room hidden successfully')
+        this.load() // Reload all rooms
+      })
+      .catch(err => alert(err.message))
+  }
+
+  onApproveBooking = (roomId, bookingId) => {
+    return updateBookingStatus(roomId, bookingId, 'Accepted')
+      .then(() => {
+        alert('Booking approved')
+        this.load() // Reload data
+      })
+      .catch(err => {
+        alert(err.message);
+        throw err;
+      })
+  }
+
+  onRejectBooking = (roomId, bookingId, reason) => {
+    return updateBookingStatus(roomId, bookingId, 'Rejected', reason)
+      .then(() => {
+        alert('Booking rejected')
+        this.load() // Reload data
+      })
+      .catch(err => {
+        alert(err.message);
+        throw err;
+      })
+  }
+
   setRoom = id => {
-    const room = this.state.roomData.find(room => room._id === id)
+    const { roomData } = this.state
+    if (!roomData) return
+    const room = roomData.find(room => room._id === id)
     this.setState({ currentRoom: room })
   }
 
@@ -200,21 +259,38 @@ class App extends Component {
     // return todaysBookings
   }
 
-  loadMyBookings = () => {
+  loadMyBookings = (rooms) => {
     let myBookings = []
+    const roomData = rooms || this.state.roomData
+    if (!roomData) return
+
     const userId = this.state.decodedToken.sub
     // Loop through all the rooms
-    this.state.roomData.forEach(room => {
+    roomData.forEach(room => {
       // Loop through all the bookings in 'room'
-      room.bookings.forEach(booking => {
-        if (booking.user === userId) {
-          // Push all bookings where the current userId is equal to the booking's userId into myBookings
-          booking.roomId = room._id
-          myBookings.push(booking)
-        }
-      })
+      if (room.bookings) {
+        room.bookings.forEach(booking => {
+          // booking.user might be an ID or a populated object
+          const bookingUserId = booking.user && (booking.user._id || booking.user)
+          if (bookingUserId === userId) {
+            // Add room info to the booking for display in MyBookings
+            booking.roomId = room._id
+            booking.roomName = room.name
+            myBookings.push(booking)
+          }
+        })
+      }
     })
     this.setState({ userBookings: myBookings })
+  }
+
+  onCreateRoom = (roomData) => {
+    const { createRoom } = require('./api/rooms');
+    createRoom(roomData)
+      .then(room => {
+        this.load();
+      })
+      .catch(err => alert('Failed to create room: ' + err.message));
   }
 
   render() {
@@ -231,7 +307,8 @@ class App extends Component {
       statusParam,
       disableRecurring,
       isSubmitting,
-      loading
+      loading,
+      showSignUp
     } = this.state
     const signedIn = !!decodedToken
     const signOut = this.onSignOut
@@ -242,7 +319,7 @@ class App extends Component {
 
     let filteredData = []
     const featureParams = this.state.filterParams
-    const date = this.state.currentDate
+    const date = this.state.calendarDate
 
     if (!!roomData) {
       // Send all room data and the selected floor, return filtered floors and store in filteredData
@@ -257,8 +334,8 @@ class App extends Component {
       }
     }
 
-    const requireAuth = render => () =>
-      signedIn ? render() : <Redirect to="/" />
+    const requireAuth = render => (props) =>
+      signedIn ? render(props) : <Redirect to="/" />
 
     return (
       <Router>
@@ -268,12 +345,32 @@ class App extends Component {
                 <Route path="/" exact render={() => (!!decodedToken && signedIn ?
                   (<Redirect to="/bookings" />) :
                   (<div className="wrapper__form">
-                      <div className="header__page">
-                        <h2 className="header__heading header__heading--sub--alt">Sign in with email</h2>
-                      </div>
-                      <SignInForm onSignIn={this.onSignIn} />
-                      <h3 className="header__heading header__heading--sub--alt">Don't have an account?</h3>
-                      <SignUpForm onSignUp={this.onSignUp} />
+                      {showSignUp ? (
+                        <Fragment>
+                          <div className="header__page">
+                            <h2 className="header__heading header__heading--sub--alt">Sign up</h2>
+                          </div>
+                          <SignUpForm onSignUp={this.onSignUp} />
+                          <h3 className="header__heading header__heading--sub--alt">Already have an account?</h3>
+                          <div className="form__group--button">
+                            <button className="button button--alternative" onClick={() => this.setState({ showSignUp: false })}>Sign in</button>
+                          </div>
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          <div className="header__page">
+                            <h2 className="header__heading header__heading--sub--alt">Sign in with email</h2>
+                          </div>
+                          <SignInForm
+                            onSignIn={this.onSignIn}
+                            onGoogleSignIn={this.onGoogleSignIn}
+                          />
+                          <h3 className="header__heading header__heading--sub--alt">Don't have an account?</h3>
+                          <div className="form__group--button">
+                            <button className="button button--alternative" onClick={() => this.setState({ showSignUp: true })}>Sign up</button>
+                          </div>
+                        </Fragment>
+                      )}
                     </div>
                   )
                 )} />
@@ -292,8 +389,7 @@ class App extends Component {
                           <NavBar
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
-                            user={signedIn ? decodedToken.sub : null}
-                            isAdmin={decodedToken.isAdmin}
+                            user={decodedToken}
                           />
                         </div>
                         <div className="wrapper__content">
@@ -345,7 +441,7 @@ class App extends Component {
                 ))} />
 
                 <Route path="/createbooking" exact render={requireAuth(
-                  () => (
+                  (routeProps) => (
                     <Fragment>
                       {!!decodedToken &&
                         !!roomData &&
@@ -356,13 +452,14 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}                                isAdmin={decodedToken.isAdmin}                              />
+                                user={signedIn ? decodedToken.sub : null}
+                              />
                             </header>
                             <div className="wrapper__content">
                               <BookingForm
                                 user={decodedToken.email}
                                 roomData={currentRoom}
-                                onMakeBooking={this.onMakeBooking}
+                                onMakeBooking={(data) => this.onMakeBooking(data, routeProps.history)}
                                 date={calendarDate}
                                 disableRecurring={disableRecurring}
                                 isSubmitting={isSubmitting}
@@ -395,7 +492,6 @@ class App extends Component {
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
                                 user={signedIn ? decodedToken.sub : null}
-                                isAdmin={decodedToken.isAdmin}
                               />
                             </div>
                             <div className="wrapper__content--bookings">
@@ -414,23 +510,32 @@ class App extends Component {
                     </Fragment>
                   ))} />
 
-                <Route path="/stats" exact render={requireAuth(() => (
+                <Route path="/admin" exact render={requireAuth(() => (
                   <Fragment>
-                    {!!decodedToken && (
+                    {!!decodedToken && decodedToken.role === 'admin' && !!roomData ? (
                       <div className="wrapper">
                         <div className="header header__nav header--flex">
-                          <h1 className="header__heading header__heading--main">Company Name Here</h1>
+                          <h1 className="header__heading header__heading--main">Company Name Here (Admin)</h1>
                           <NavBar
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
-                            user={signedIn ? decodedToken.sub : null}
-                            isAdmin={decodedToken.isAdmin}
+                            user={decodedToken}
+                            isAdmin={true}
                           />
                         </div>
                         <div className="wrapper__content">
-                          <RoomStats isAdmin={decodedToken.isAdmin} />
+                          <AdminDashboard 
+                            roomData={roomData}
+                            onUpdateRoom={this.onUpdateRoom}
+                            onCreateRoom={this.onCreateRoom}
+                            onDeleteRoom={this.onHideRoom}
+                            onApprove={this.onApproveBooking}
+                            onReject={this.onRejectBooking}
+                          />
                         </div>
                       </div>
+                    ) : (
+                      <Redirect to="/bookings" />
                     )}
                   </Fragment>
                 ))} />
@@ -447,29 +552,34 @@ class App extends Component {
   }
 
   load() {
+    this.setState({ loading: true })
     const { decodedToken } = this.state
-    const signedIn = !!decodedToken
-
-    if (signedIn) {
-      // display loading page
-      this.setState({ loading: true })
-      // load all of the rooms from the database
-      listRooms()
-        .then(rooms => {
-          this.setState({ roomData: rooms })
-          // load the current user's bookings
-          this.loadMyBookings()
-          // the state's current room defaults to first room
-          const room = this.state.roomData[0]
-          this.setRoom(room._id)
-          // toggle loading page off
-          this.setState({ loading: false })
+    const isAdmin = decodedToken && decodedToken.role === 'admin'
+    
+    listRooms(isAdmin)
+      .then(rooms => {
+        const { decodedToken } = this.state
+        const signedIn = !!decodedToken
+        
+        if (signedIn) {
+          this.loadMyBookings(rooms)
+        }
+        
+        let currentRoom = null
+        if (rooms && rooms.length > 0) {
+          currentRoom = rooms[0]
+        }
+        
+        this.setState({ 
+          roomData: rooms,
+          currentRoom: currentRoom,
+          loading: false 
         })
-        .catch(error => {
-          console.error('Error loading room data', error)
-          this.setState({ error })
-        })
-    }
+      })
+      .catch(error => {
+        console.error('Error loading room data', error)
+        this.setState({ error, loading: false })
+      })
   }
 
   // When the App first renders

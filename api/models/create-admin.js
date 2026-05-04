@@ -9,7 +9,7 @@ async function createAdmin() {
     email: 'admin@roombooking.com',
     firstName: 'Admin',
     lastName: 'User',
-    isAdmin: true
+    role: 'admin'
   })
   
   await User.register(admin, 'admin123', (err, user) => {

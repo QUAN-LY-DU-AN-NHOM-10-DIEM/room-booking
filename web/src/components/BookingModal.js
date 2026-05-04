@@ -1,16 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactModal from 'react-modal'
 import momentTimezone from 'moment-timezone'
 import Button from './Button'
 import { findRoomInfo } from '../helpers/bookingForm.js'
 
 const BookingModal = props => {
+  const [cachedBooking, setCachedBooking] = useState(props.selectedBooking)
+
+  useEffect(() => {
+    if (props.selectedBooking) {
+      setCachedBooking(props.selectedBooking)
+    }
+  }, [props.selectedBooking])
+
+  const booking = props.selectedBooking || cachedBooking
+
   const deleteBooking = () => {
-    const roomID = props.selectedBooking.roomId
-    const bookingID = props.selectedBooking._id
+    if (!booking) return
+    const roomID = booking.roomId
+    const bookingID = booking._id
     props.onDeleteBooking(roomID, bookingID)
     props.onCloseBooking()
   }
+
   return (
     <ReactModal
       isOpen={!!props.selectedBooking}
@@ -24,27 +36,35 @@ const BookingModal = props => {
       className="modal"
     >
       <h3 className="modal__title">Booking Details</h3>
-      {!!props.selectedBooking && (
+      {booking && (
         <div className="modal__boday">
           <p className="modal__paragraph"><strong>Title: </strong>{props.selectedBooking['title']}</p>
-          <p className="modal__paragraph"><strong>Name: </strong>{props.selectedBooking.user.firstName} {props.selectedBooking.user.lastName}</p>
-          <p className="modal__paragraph"><strong>Email: </strong>{props.selectedBooking.user.email}</p>
+          <p className="modal__paragraph">
+            <strong>Name: </strong>
+            {props.selectedBooking.user ? `${props.selectedBooking.user.firstName} ${props.selectedBooking.user.lastName}` : 'N/A'}
+          </p>
+          <p className="modal__paragraph">
+            <strong>Email: </strong>
+            {props.selectedBooking.user ? props.selectedBooking.user.email : 'N/A'}
+          </p>
           <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(props.selectedBooking.roomId, props.roomData).name}{', Level '}
           {findRoomInfo(props.selectedBooking.roomId, props.roomData).floor}</p>
           <p className="modal__paragraph"><strong>Time: </strong>{`${momentTimezone
-              .tz(props.selectedBooking['bookingStart'], 'Asia/Ho_Chi_Minh')
+              .tz(booking['bookingStart'], 'Asia/Ho_Chi_Minh')
             .format('h.mma')} to ${momentTimezone
-              .tz(props.selectedBooking['bookingEnd'], 'Asia/Ho_Chi_Minh')
+              .tz(booking['bookingEnd'], 'Asia/Ho_Chi_Minh')
               .format('h.mma')}`}
-            <p className="modal__paragraph"><strong>Date: </strong>{`${momentTimezone.tz(props.selectedBooking['bookingStart'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')} to ${momentTimezone.tz(props.selectedBooking['bookingEnd'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')}`}
           </p>
-          </p>
-          <p className="modal__paragraph"><strong>Status: </strong>{props.selectedBooking['status']}</p>
-          <p className="modal__paragraph"><strong>Purpose: </strong>{props.selectedBooking['purpose']}</p>
-          {/* <p className="modal__paragraph"><strong>Description: </strong>{props.selectedBooking['description']}</p> */}
+          <p className="modal__paragraph"><strong>Date: </strong>{`${momentTimezone.tz(booking['bookingStart'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')} to ${momentTimezone.tz(booking['bookingEnd'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')}`}</p>
+          <p className="modal__paragraph"><strong>Status: </strong>{booking['status']}</p>
+          <p className="modal__paragraph"><strong>Purpose: </strong>{booking['purpose']}</p>
         </div>
       )}
-      <a href={`mailto:${props.user}`} className="button">Contact</a>
+      {booking && booking.user && booking.user.email ? (
+        <a href={`mailto:${booking.user.email}`} className="button">Contact</a>
+      ) : (
+        <a href={`mailto:${props.user}`} className="button">Contact</a>
+      )}
       <Button
         onClick={deleteBooking}
         text={`Delete`}

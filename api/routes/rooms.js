@@ -2,12 +2,13 @@ const express = require('express')
 const moment = require('moment')
 const momentTimezone = require('moment-timezone')
 const Room = require('../models/Room')
-const { requireJWT } = require('../middleware/auth')
+const { requireJWT, requireAdmin } = require('../middleware/auth')
 
 const router = new express.Router()
 
 router.get('/rooms', (req, res) => {
-  Room.find()
+  const filter = req.query.all === 'true' ? {} : { isDeleted: { $ne: true } }
+  Room.find(filter)
     .populate('bookings.user', 'firstName lastName email')
     .then(rooms => {
       res.json(rooms)
@@ -17,7 +18,7 @@ router.get('/rooms', (req, res) => {
     })
 })
 
-router.post('/rooms', requireJWT, (req, res) => {
+router.post('/rooms', requireJWT, requireAdmin, (req, res) => {
   Room.create(req.body)
     .then(room => {
       res.status(201).json(room)
@@ -80,6 +81,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       },
       { new: true, runValidators: true }
     )
+      .populate('bookings.user', 'firstName lastName email')
       .then(room => {
         if (!room) {
           Room.findById(id).then(existingRoom => {
@@ -179,7 +181,8 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       })));
       
       room.save()
-        .then(savedRoom => res.status(201).json(savedRoom))
+        .then(savedRoom => savedRoom.populate('bookings.user', 'firstName lastName email'))
+        .then(populatedRoom => res.status(201).json(populatedRoom))
         .catch(error => res.status(400).json({ error: error.message || error }));
     }).catch(error => res.status(400).json({ error: error.message || error }));
   }
@@ -296,6 +299,134 @@ router.delete('/rooms/:id/:bookingId', requireJWT, (req, res) => {
     .catch(error => {
       res.status(400).json({ error })
     })
+})
+
+// Update a room (Admin only)
+router.patch('/rooms/:id', requireJWT, requireAdmin, (req, res) => {
+  const { id } = req.params
+  Room.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+    .then(room => {
+      if (!room) return res.status(404).json({ error: 'Room not found' })
+      res.json(room)
+    })
+    .catch(error => res.status(400).json({ error }))
+})
+ 
+// Soft delete a room (Admin only)
+router.delete('/rooms/:id', requireJWT, requireAdmin, (req, res) => {
+  const { id } = req.params
+  Room.findByIdAndUpdate(id, { isDeleted: true }, { new: true })
+    .then(room => {
+      if (!room) return res.status(404).json({ error: 'Room not found' })
+      res.json({ message: 'Room hidden successfully', room })
+    })
+    .catch(error => res.status(400).json({ error }))
+})
+ 
+// Get all pending bookings (Admin only)
+router.get('/admin/bookings/pending', requireJWT, requireAdmin, (req, res) => {
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 10
+  const skip = (page - 1) * limit
+ 
+  Room.aggregate([
+    { $unwind: '$bookings' },
+    { $match: { 'bookings.status': 'Pending' } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'bookings.user',
+        foreignField: '_id',
+        as: 'user_details'
+      }
+    },
+    { $unwind: '$user_details' },
+    {
+      $project: {
+        _id: 1,
+        roomName: '$name',
+        booking: '$bookings',
+        user: {
+          firstName: '$user_details.firstName',
+          lastName: '$user_details.lastName',
+          email: '$user_details.email'
+        }
+      }
+    },
+    { $sort: { 'booking.bookingStart': 1 } },
+    {
+      $facet: {
+        metadata: [{ $count: 'total' }],
+        data: [{ $skip: skip }, { $limit: limit }]
+      }
+    }
+  ])
+    .then(results => {
+      const data = results[0].data
+      const total = results[0].metadata[0] ? results[0].metadata[0].total : 0
+      res.json({
+        bookings: data,
+        pagination: {
+          total,
+          page,
+          pages: Math.ceil(total / limit)
+        }
+      })
+    })
+    .catch(error => res.status(400).json({ error }))
+})
+ 
+// Approve/Reject a booking (Admin only)
+router.patch('/admin/bookings/:roomId/:bookingId', requireJWT, requireAdmin, (req, res) => {
+  const { roomId, bookingId } = req.params
+  const { status, rejectionReason } = req.body
+ 
+  if (!['Accepted', 'Rejected'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' })
+  }
+ 
+  Room.findOneAndUpdate(
+    { _id: roomId, 'bookings._id': bookingId },
+    {
+      $set: {
+        'bookings.$.status': status,
+        'bookings.$.rejectionReason': rejectionReason || ''
+      }
+    },
+    { new: true }
+  )
+    .then(room => {
+      if (!room) return res.status(404).json({ error: 'Booking not found' })
+      res.json(room)
+    })
+    .catch(error => res.status(400).json({ error }))
+})
+ 
+// Maintenance block (Admin only)
+router.post('/admin/maintenance/:id', requireJWT, requireAdmin, (req, res) => {
+  const { id } = req.params
+  const { bookingStart, bookingEnd, title } = req.body
+ 
+  Room.findByIdAndUpdate(
+    id,
+    {
+      $push: {
+        bookings: {
+          bookingStart: new Date(bookingStart),
+          bookingEnd: new Date(bookingEnd),
+          startHour: dateAEST(bookingStart).format('H.mm'),
+          duration: durationHours(bookingStart, bookingEnd),
+          status: 'Maintenance',
+          title: title || 'Maintenance',
+          businessUnit: 'ADMIN',
+          purpose: 'Maintenance'
+        }
+      }
+    },
+    { new: true }
+  )
+    .then(room => res.status(201).json(room))
+    .catch(error => res.status(400).json({ error }))
 })
 
 module.exports = router

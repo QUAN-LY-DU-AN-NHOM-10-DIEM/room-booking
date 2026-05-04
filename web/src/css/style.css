@@ -166,6 +166,21 @@ input[type=radio] {
   min-width: 1rem;
   padding: 1.2rem 2.6rem;
 }
+.auth-divider {
+  color: #7a7a7a;
+  font-family: "raleway", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 1.8rem 0 1.2rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+.google-signin-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  min-height: 44px;
+}
 .rdt {
   background: #fafafa;
   box-shadow: 0px 2px 5px 0px #cecece;
@@ -381,6 +396,10 @@ td.rdtYear:hover {
 }
 .nav__list {
   margin: 0.4rem 1.6rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
 }
 .nav__link {
   border-bottom: 2px solid #f4f4f4;
@@ -392,6 +411,49 @@ td.rdtYear:hover {
 }
 .nav__link:hover {
   font-weight: 700;
+}
+.nav__avatar-container {
+  position: relative;
+  cursor: pointer;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  margin-left: 4rem;
+}
+.nav__avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0.2rem solid #f4f4f4;
+  transition: transform 0.2s;
+}
+.nav__avatar:hover {
+  transform: scale(1.1);
+}
+.nav__dropdown {
+  position: absolute;
+  top: 6rem;
+  right: 0;
+  background: #1c1c1c;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+  border-radius: 0.4rem;
+  z-index: 1000;
+  min-width: 14rem;
+  padding: 0.5rem 0;
+}
+.nav__dropdown-item {
+  padding: 1.2rem 2rem;
+  color: #f4f4f4;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.nav__dropdown-item:hover {
+  background: #333;
 }
 .table {
   background: #fafafa;
@@ -604,10 +666,11 @@ li {
 .wrapper__bookings {
   background: #fafafa;
   box-shadow: 1px 1px 5px 0px #cecece;
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  padding: 3rem;
   grid-column: 1;
   grid-row: 2;
 }
@@ -706,6 +769,7 @@ li {
 }
 .form__group--button {
   margin: 2rem 0 3rem 0;
+  text-align: center;
 }
 .form__group--margin-top {
   margin-top: 3rem;
@@ -827,10 +891,8 @@ input[type=radio] {
   margin-top: 1.4rem;
 }
 .booking__user-info {
-  grid-column: 2;
-  grid-row: 1;
   line-height: 1rem;
-  margin: 2rem 3.5rem;
+  margin: 0 auto 3rem auto;
   padding: 1rem;
   text-align: center;
 }
@@ -839,16 +901,14 @@ input[type=radio] {
   width: 10rem;
   height: 12rem;
   text-align: right;
-  margin: 3.4rem auto;
+  margin: 0 auto 1rem auto;
 }
 .booking__box {
-  grid-column: 1;
-  grid-row: 1;
   background: #f4f4f4;
   display: -ms-flexbox;
   display: flex;
   border: 0.1rem solid #cecece;
-  margin: 5rem;
+  margin: 1rem 0 3rem 0;
   width: 100%;
 }
 .booking__innerbox--left {

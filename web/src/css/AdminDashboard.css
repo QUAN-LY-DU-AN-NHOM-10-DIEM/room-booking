@@ -1,0 +1,202 @@
+/* Admin Dashboard Styling - Aligned with Global Design */
+.admin-dashboard {
+  max-width: 1600px;
+  width: 95%;
+  margin: 2rem auto;
+  padding: 4rem;
+  background: #fafafa;
+  border: 0.1rem solid #cecece;
+  box-shadow: 0px 2px 5px 0px #cecece;
+  font-family: 'Raleway', sans-serif;
+}
+
+.admin-dashboard__header {
+  margin-bottom: 4rem;
+  text-align: left;
+  border-bottom: 0.1rem solid #1c1c1c;
+  padding-bottom: 2rem;
+}
+
+.admin-dashboard__title {
+  font-size: 3.2rem;
+  color: #1c1c1c;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.admin-dashboard__subtitle {
+  font-size: 1.8rem;
+  color: #666;
+}
+
+.admin-dashboard__nav {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.admin-dashboard__nav-item {
+  background: #fafafa;
+  border: 0.1rem solid #1c1c1c;
+  padding: 1.2rem 3rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1c1c1c;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.admin-dashboard__nav-item:hover {
+  background: #1c1c1c;
+  color: #fafafa;
+}
+
+.admin-dashboard__nav-item.active {
+  background: #ed1c24;
+  border-color: #ed1c24;
+  color: #fafafa;
+}
+
+/* Table Enhancements - Clean & Professional */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fafafa;
+  border: 0.1rem solid #cecece;
+}
+
+.admin-table th {
+  background: #eee;
+  padding: 1.5rem 2rem;
+  text-align: left;
+  color: #1c1c1c;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  border-bottom: 0.1rem solid #cecece;
+}
+
+.admin-table td {
+  padding: 1.5rem 2rem;
+  font-size: 1.6rem;
+  border-bottom: 0.1rem solid #cecece;
+  color: #333;
+  vertical-align: middle;
+}
+
+.admin-table__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-table tr:hover {
+  background: rgba(237, 28, 36, 0.02);
+}
+
+.status-badge {
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 0.1rem solid currentColor;
+}
+
+.status-badge--pending { color: #ff9800; }
+.status-badge--accepted { color: #2e7d32; }
+.status-badge--rejected { color: #d32f2f; }
+
+/* Global Form Elements for Admin */
+.admin-form .form__input,
+.admin-table .form__input {
+  width: 100%;
+  height: 4.5rem;
+  border: 0.1rem solid #1c1c1c;
+  padding: 0 1.5rem;
+  font-size: 1.6rem;
+  background: #fff;
+  border-radius: 0;
+}
+
+/* Styled Select Dropdown for both Form and Table */
+.admin-form select.form__input,
+.admin-table select.form__input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2em;
+  padding-right: 3.5rem;
+}
+
+/* Form Layout */
+.admin-form {
+  margin: 0 0 4rem 0;
+  padding: 3rem;
+  background: #fff;
+  border: 0.1rem solid #cecece;
+  box-shadow: 0px 2px 5px 0px #cecece;
+}
+
+.admin-form__title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  color: #ed1c24;
+}
+
+.admin-form__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Force 3 columns to avoid overlap */
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 800px) {
+  .admin-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* Use global button styles */
+.admin-dashboard .button {
+  font-size: 1.6rem;
+  padding: 1.2rem 3rem;
+  margin-right: 1rem;
+}
+
+/* Specific maintenance state */
+.button--maintenance {
+  background: #f39c12;
+  border: 0.1rem solid #f39c12;
+  color: #fafafa;
+}
+
+.button--maintenance:hover {
+  background: #fafafa;
+  color: #f39c12;
+  border-color: #f39c12;
+}
+
+.button--maintenance.active {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: #fafafa;
+}
+
+.button--maintenance.active:hover {
+  background: #fafafa;
+  color: #c0392b;
+}
