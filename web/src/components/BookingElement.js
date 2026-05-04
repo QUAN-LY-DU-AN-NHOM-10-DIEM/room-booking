@@ -18,7 +18,7 @@ function BookingElement({
     <div className="booking__box">
       <div className="booking__innerbox--left">
         <h3 className="header__heading--sub--alt header__heading--small">{moment(bookingData.bookingStart).format('dddd, MMMM Do YYYY')}</h3>
-        <p>{bookingData.businessUnit}</p>
+        <p>Status: {bookingData.status}</p>
         <p>{bookingData.purpose}</p>
       </div>
       <div className="booking__innerbox--middle">
@@ -29,7 +29,7 @@ function BookingElement({
       <div className="booking__innerbox--right">
         <Button
           onClick={() => onDeleteBooking(bookingData.roomId, bookingData._id)}
-          text={`Delete`}
+          text={`Cancel`}
         />
       </div>
     </div>
