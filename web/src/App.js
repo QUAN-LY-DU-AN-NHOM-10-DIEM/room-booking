@@ -293,6 +293,7 @@ class App extends Component {
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
                             user={signedIn ? decodedToken.sub : null}
+                            isAdmin={decodedToken.isAdmin}
                           />
                         </div>
                         <div className="wrapper__content">
@@ -355,8 +356,7 @@ class App extends Component {
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}
-                              />
+                                user={signedIn ? decodedToken.sub : null}                                isAdmin={decodedToken.isAdmin}                              />
                             </header>
                             <div className="wrapper__content">
                               <BookingForm
@@ -395,6 +395,7 @@ class App extends Component {
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
                                 user={signedIn ? decodedToken.sub : null}
+                                isAdmin={decodedToken.isAdmin}
                               />
                             </div>
                             <div className="wrapper__content--bookings">
@@ -423,10 +424,11 @@ class App extends Component {
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
                             user={signedIn ? decodedToken.sub : null}
+                            isAdmin={decodedToken.isAdmin}
                           />
                         </div>
                         <div className="wrapper__content">
-                          <RoomStats />
+                          <RoomStats isAdmin={decodedToken.isAdmin} />
                         </div>
                       </div>
                     )}

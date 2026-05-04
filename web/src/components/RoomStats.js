@@ -16,7 +16,20 @@ import { Calendar, TrendingUp, Clock, Award, Trophy, Zap, Target, Crown, Medal, 
 import { getRoomStats } from '../api/rooms'; // Đổi lại đường dẫn cho khớp với cấu trúc thư mục của bạn
 import '../css/RoomStats.css'; 
 
-export default function RoomStats() {
+export default function RoomStats({ isAdmin = false }) {
+  // Check if user is admin
+  if (!isAdmin) {
+    return (
+      <div className="rs-dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <h2 style={{ color: '#DC2626', marginBottom: '1rem', fontSize: '1.5rem' }}>Access Denied</h2>
+          <p style={{ fontSize: '1rem', color: '#6B7280' }}>Chỉ quản trị viên mới có thể xem thống kê phòng</p>
+          <p style={{ fontSize: '0.875rem', color: '#9CA3AF', marginTop: '0.5rem' }}>(Only administrators can view room statistics)</p>
+        </div>
+      </div>
+    );
+  }
+
   const [viewMode, setViewMode] = useState('month'); // BE nhận 'month' hoặc 'week'
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);

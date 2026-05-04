@@ -36,7 +36,8 @@ const signJWTForUser = (req, res) => {
   const user = req.user
   const token = JWT.sign(
     {
-      email: user.email
+      email: user.email,
+      isAdmin: user.isAdmin || false
     },
     jwtSecret,
     {

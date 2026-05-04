@@ -8,7 +8,8 @@ async function createAdmin() {
   const admin = new User({
     email: 'admin@roombooking.com',
     firstName: 'Admin',
-    lastName: 'User'
+    lastName: 'User',
+    isAdmin: true
   })
   
   await User.register(admin, 'admin123', (err, user) => {
