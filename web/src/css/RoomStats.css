@@ -1,0 +1,305 @@
+/* RoomStats.css - Light Mode Version */
+:root {
+  --bg-primary: #F4F6F8; /* Nền tổng thể sáng */
+  --bg-secondary: #FFFFFF; /* Nền card trắng */
+  --text-main: #1F2937; /* Chữ xám đậm (gần đen) */
+  --text-muted: #6B7280; /* Chữ xám nhạt */
+  --border-light: #E5E7EB; /* Viền xám nhạt */
+  --accent-cyan: #0284C7;
+  --accent-purple: #7C3AED;
+  --accent-pink: #DB2777;
+}
+
+.rs-dashboard {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  padding: 2rem;
+  font-family: 'Inter', "proxima-nova", sans-serif;
+}
+
+.rs-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.rs-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.rs-header .rs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #E0F2FE;
+  color: var(--accent-cyan);
+  border-radius: 50px;
+  font-size: 0.875rem;
+  border: 1px solid #BAE6FD;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.rs-header .rs-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.rs-header .rs-subtitle {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+/* Stats Grid */
+.rs-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.rs-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.rs-stat-card:hover {
+  transform: translateY(-5px);
+  border-color: #BAE6FD;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Hiệu ứng chớp sáng nhẹ khi hover card */
+.rs-stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+  transform: skewX(-20deg);
+  transition: 0.5s;
+}
+
+.rs-stat-card:hover::after {
+  left: 150%;
+}
+
+.rs-stat-icon-wrapper {
+  display: inline-flex;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #F3F4F6;
+  margin-bottom: 1rem;
+}
+
+.rs-stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  color: var(--text-main);
+}
+
+/* Chart & Controls */
+.rs-section-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+
+.rs-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.rs-tabs {
+  display: flex;
+  background: #F3F4F6;
+  padding: 0.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+}
+
+.rs-tabs button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rs-tabs button.active {
+  background: #FFFFFF;
+  color: var(--accent-cyan);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Ranking Table */
+.rs-ranking-table {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.rs-ranking-header {
+  padding: 1.5rem 2rem;
+  background: #F9FAFB;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rs-metric-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rs-metric-filters button {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.rs-metric-filters button:hover {
+  background: #F3F4F6;
+}
+
+.rs-metric-filters button.active {
+  background: #E0F2FE;
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.rs-room-row {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.3s;
+}
+
+.rs-room-row:last-child {
+  border-bottom: none;
+}
+
+.rs-room-row:hover {
+  background: #F9FAFB;
+}
+
+.rs-rank-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  background: #F3F4F6;
+  margin-right: 1.5rem;
+  color: var(--text-main);
+}
+
+/* Màu huy chương Top 3 */
+.rs-rank-badge.rank-1 {
+  background: linear-gradient(135deg, #FDE68A, #F59E0B);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+}
+.rs-rank-badge.rank-2 {
+  background: linear-gradient(135deg, #E5E7EB, #9CA3AF);
+  color: #FFFFFF;
+}
+.rs-rank-badge.rank-3 {
+  background: linear-gradient(135deg, #FED7AA, #F97316);
+  color: #FFFFFF;
+}
+
+.rs-room-info {
+  flex: 1;
+}
+
+.rs-room-info h3 {
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.rs-room-info p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.rs-room-stats {
+  display: flex;
+  gap: 3rem;
+}
+
+.rs-stat-item {
+  text-align: right;
+}
+
+.rs-stat-item .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.rs-stat-item .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+.rs-progress-container {
+  width: 200px;
+  margin-left: 3rem;
+}
+
+.rs-progress-bar {
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rs-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+}

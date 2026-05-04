@@ -150,6 +150,102 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
   }
 })
 
+// Get room usage statistics for current month/week
+router.get('/rooms/stats/:period', (req, res) => {
+  const { period } = req.params // 'month' or 'week'
+  const now = momentTimezone().tz('Australia/Sydney')
+  const startOfPeriod = period === 'month' ? now.startOf('month') : now.startOf('week')
+  const endOfPeriod = period === 'month' ? now.endOf('month') : now.endOf('week')
+
+  Room.find()
+    .then(rooms => {
+      const stats = rooms.map(room => {
+        const relevantBookings = room.bookings.filter(booking => {
+          const bookingStart = momentTimezone(booking.bookingStart).tz('Australia/Sydney')
+          return bookingStart.isBetween(startOfPeriod, endOfPeriod, null, '[]')
+        })
+
+        const totalHours = relevantBookings.reduce((sum, booking) => sum + booking.duration, 0)
+        const bookingCount = relevantBookings.length
+
+        return {
+          roomId: room._id,
+          roomName: room.name,
+          floor: room.floor,
+          totalHours: Math.round(totalHours * 100) / 100, // Round to 2 decimal places
+          bookingCount
+        }
+      })
+
+      // Sort by total hours descending
+      stats.sort((a, b) => b.totalHours - a.totalHours)
+
+      res.json({
+        period,
+        startDate: startOfPeriod.format(),
+        endDate: endOfPeriod.format(),
+        stats
+      })
+    })
+    .catch(error => {
+      res.status(500).json({ error: error.message })
+    })
+})
+
+// Get top rooms by usage (hours or count)
+router.get('/rooms/top/:metric/:limit?', (req, res) => {
+  const { metric } = req.params // 'hours' or 'count'
+  const limit = parseInt(req.params.limit) || 10
+  const period = req.query.period || 'month' // default to month, can be 'week'
+
+  const now = momentTimezone().tz('Australia/Sydney')
+  const startOfPeriod = period === 'month' ? now.startOf('month') : now.startOf('week')
+  const endOfPeriod = period === 'month' ? now.endOf('month') : now.endOf('week')
+
+  Room.find()
+    .then(rooms => {
+      const roomStats = rooms.map(room => {
+        const relevantBookings = room.bookings.filter(booking => {
+          const bookingStart = momentTimezone(booking.bookingStart).tz('Australia/Sydney')
+          return bookingStart.isBetween(startOfPeriod, endOfPeriod, null, '[]')
+        })
+
+        const totalHours = relevantBookings.reduce((sum, booking) => sum + booking.duration, 0)
+        const bookingCount = relevantBookings.length
+
+        return {
+          roomId: room._id,
+          roomName: room.name,
+          floor: room.floor,
+          totalHours: Math.round(totalHours * 100) / 100,
+          bookingCount
+        }
+      })
+
+      // Sort by the specified metric
+      if (metric === 'hours') {
+        roomStats.sort((a, b) => b.totalHours - a.totalHours)
+      } else if (metric === 'count') {
+        roomStats.sort((a, b) => b.bookingCount - a.bookingCount)
+      }
+
+      // Return top N rooms
+      const topRooms = roomStats.slice(0, limit)
+
+      res.json({
+        period,
+        metric,
+        limit,
+        startDate: startOfPeriod.format(),
+        endDate: endOfPeriod.format(),
+        topRooms
+      })
+    })
+    .catch(error => {
+      res.status(500).json({ error: error.message })
+    })
+})
+
 // Delete a booking
 router.delete('/rooms/:id/:bookingId', requireJWT, (req, res) => {
   const { id } = req.params

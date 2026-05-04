@@ -16,6 +16,7 @@ import Key from './components/Key'
 import MyBookings from './components/MyBookings'
 import NavBar from './components/NavBar'
 import RoomsList from './components/RoomsList'
+import RoomStats from './components/RoomStats'
 import SignInForm from './components/SignInForm'
 import SignUpForm from './components/SignUpForm'
 
@@ -402,6 +403,26 @@ class App extends Component {
                         )}
                     </Fragment>
                   ))} />
+
+                <Route path="/stats" exact render={requireAuth(() => (
+                  <Fragment>
+                    {!!decodedToken && (
+                      <div className="wrapper">
+                        <div className="header header__nav header--flex">
+                          <h1 className="header__heading header__heading--main">Company Name Here</h1>
+                          <NavBar
+                            signOut={signOut}
+                            loadMyBookings={loadMyBookings}
+                            user={signedIn ? decodedToken.sub : null}
+                          />
+                        </div>
+                        <div className="wrapper__content">
+                          <RoomStats />
+                        </div>
+                      </div>
+                    )}
+                  </Fragment>
+                ))} />
 
                 <Route render={({ location }) => <h2>
                       {' '}
