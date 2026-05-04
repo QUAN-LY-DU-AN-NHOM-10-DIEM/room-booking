@@ -191,15 +191,15 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
 // Get room usage statistics for current month/week
 router.get('/rooms/stats/:period', (req, res) => {
   const { period } = req.params // 'month' or 'week'
-  const now = momentTimezone().tz('Australia/Sydney')
-  const startOfPeriod = period === 'month' ? now.startOf('month') : now.startOf('week')
-  const endOfPeriod = period === 'month' ? now.endOf('month') : now.endOf('week')
+  const now = momentTimezone().tz('Asia/Ho_Chi_Minh')
+  const startOfPeriod = period === 'month' ? now.clone().startOf('month') : now.clone().startOf('week')
+  const endOfPeriod = period === 'month' ? now.clone().endOf('month') : now.clone().endOf('week')
 
   Room.find()
     .then(rooms => {
       const stats = rooms.map(room => {
         const relevantBookings = room.bookings.filter(booking => {
-          const bookingStart = momentTimezone(booking.bookingStart).tz('Australia/Sydney')
+          const bookingStart = momentTimezone(booking.bookingStart).tz('Asia/Ho_Chi_Minh')
           return bookingStart.isBetween(startOfPeriod, endOfPeriod, null, '[]')
         })
 
@@ -236,15 +236,15 @@ router.get('/rooms/top/:metric/:limit?', (req, res) => {
   const limit = parseInt(req.params.limit) || 10
   const period = req.query.period || 'month' // default to month, can be 'week'
 
-  const now = momentTimezone().tz('Australia/Sydney')
-  const startOfPeriod = period === 'month' ? now.startOf('month') : now.startOf('week')
-  const endOfPeriod = period === 'month' ? now.endOf('month') : now.endOf('week')
+  const now = momentTimezone().tz('Asia/Ho_Chi_Minh')
+  const startOfPeriod = period === 'month' ? now.clone().startOf('month') : now.clone().startOf('week')
+  const endOfPeriod = period === 'month' ? now.clone().endOf('month') : now.clone().endOf('week')
 
   Room.find()
     .then(rooms => {
       const roomStats = rooms.map(room => {
         const relevantBookings = room.bookings.filter(booking => {
-          const bookingStart = momentTimezone(booking.bookingStart).tz('Australia/Sydney')
+          const bookingStart = momentTimezone(booking.bookingStart).tz('Asia/Ho_Chi_Minh')
           return bookingStart.isBetween(startOfPeriod, endOfPeriod, null, '[]')
         })
 
