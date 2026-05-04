@@ -314,8 +314,9 @@ td.rdtYear:hover {
   width: 23rem;
 }
 .key__group {
-  display: -ms-inline-flexbox;
-  display: inline-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 1rem;
   -ms-flex-align: center;
       align-items: center;
 }

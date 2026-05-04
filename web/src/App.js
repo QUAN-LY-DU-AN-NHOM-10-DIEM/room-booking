@@ -29,7 +29,7 @@ import { getDecodedToken } from './api/token'
 import { makeBooking, deleteBooking, updateStateRoom } from './api/booking'
 import Calendar from './components/Calendar'
 import BookingModal from './components/BookingModal'
-import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByAvailablity } from './helpers/filters'
+import { floorParams, filterParams, capacityParams, onFilterByFloor, onFilterByFeature, onFilterByCapacity, onFilterByStatus } from './helpers/filters'
 import { initialRoom } from './helpers/rooms'
 
 class App extends Component {
@@ -42,7 +42,7 @@ class App extends Component {
     filterParams: filterParams,
     capacityParams: capacityParams,
     floorParam: 'all',
-    availabilityParam: null,
+    statusParam: 'all',
     filteredData: null,
     checked: null,
     currentRoom: null,
@@ -174,8 +174,8 @@ class App extends Component {
 		this.setState({ floorParam: value })
   }
 
-  onSetAvailabilityParam = availability => {
-    this.setState({ availabilityParam: availability })
+  onSetStatusParam = status => {
+    this.setState({ statusParam: status })
   }
 
   // get today's bookings for all rooms
@@ -227,7 +227,7 @@ class App extends Component {
       filterParams,
       capacityParams,
       floorParam,
-      availabilityParam,
+      statusParam,
       disableRecurring,
       isSubmitting,
       loading
@@ -250,8 +250,10 @@ class App extends Component {
       filteredData = onFilterByFeature(featureParams, filteredData)
       // Send the previously filtered data along with the capacity params
       filteredData = onFilterByCapacity(capacityParams, filteredData)
-      // Send the previously filtered data along with the availability
-      filteredData = onFilterByAvailablity(availabilityParam, filteredData)
+      // Send the previously filtered data along with the status
+      if (statusParam && statusParam !== 'all') {
+        filteredData = onFilterByStatus(statusParam, filteredData, calendarDate)
+      }
     }
 
     const requireAuth = render => () =>
@@ -305,13 +307,11 @@ class App extends Component {
                                 onSetFloorParam={this.onSetFloorParam}
                                 onToggleFeature={this.onToggleFeature}
                                 onToggleCapacity={this.onToggleCapacity}
-                                onSetAvailabilityParam={
-                                  this.onSetAvailabilityParam
-                                }
+                                onSetStatusParam={this.onSetStatusParam}
                                 filterParams={filterParams}
                                 capacityParams={capacityParams}
                                 floorParam={floorParam}
-                                availabilityParam={availabilityParam}
+                                statusParam={statusParam}
                                 onSetTimeFilterParams={this.onSetTimeFilterParams}
                                 date={calendarDate}
                               />
