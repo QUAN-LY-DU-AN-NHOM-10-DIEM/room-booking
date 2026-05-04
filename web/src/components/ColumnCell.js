@@ -37,22 +37,20 @@ const ColumnCell = props => {
       <tbody>
       <tr className="table__row--no-border table__row--border-bottom">
           <td
-        onClick={() => props.onShowBooking(firstBookingData)} className={`table__cell--${firstBookingData.businessUnit
-              .replace(/ /g, '-')
+        onClick={() => props.onShowBooking(firstBookingData)} className={`table__cell--status-${(firstBookingData.status || 'pending')
             .toLowerCase()} table__cell--subcell`
             }
           >
-            {firstBookingData.businessUnit}
+            {firstBookingData.status || 'Pending'}
           </td>
         </tr>
         <tr className="table__row--no-border">
           <td
-        onClick={() => props.onShowBooking(secondBookingData)} className={`table__cell--${secondBookingData.businessUnit
-              .replace(/ /g, '-')
+        onClick={() => props.onShowBooking(secondBookingData)} className={`table__cell--status-${(secondBookingData.status || 'pending')
             .toLowerCase()} table__cell--subcell`
             }
           >
-            {secondBookingData.businessUnit}
+            {secondBookingData.status || 'Pending'}
           </td>
         </tr>
       </tbody>
@@ -65,12 +63,11 @@ const ColumnCell = props => {
           <tbody>
           <tr className="table__row--no-border table__row--border-bottom">
               <td
-            onClick={() => props.onShowBooking(bookingData)} className={`table__cell--${bookingData.businessUnit
-                  .replace(/ /g, '-')
+            onClick={() => props.onShowBooking(bookingData)} className={`table__cell--status-${(bookingData.status || 'pending')
                 .toLowerCase()} table__cell--subcell`
                 }
               >
-                {bookingData.businessUnit}
+                {bookingData.status || 'Pending'}
               </td>
             </tr>
             <tr className="table__row--no-border">
@@ -88,12 +85,11 @@ const ColumnCell = props => {
               <td className="table__cell--subcell available">Available</td>
             </tr>
             <tr className="table__row--no-border">
-          <td onClick={() => props.onShowBooking(bookingData)} className={`table__cell--${bookingData.businessUnit
-                  .replace(/ /g, '-')
+          <td onClick={() => props.onShowBooking(bookingData)} className={`table__cell--status-${(bookingData.status || 'pending')
                   .toLowerCase()} table__cell--subcell`
                 }
               >
-                {bookingData.businessUnit}
+                {bookingData.status || 'Pending'}
               </td>
             </tr>
           </tbody>
@@ -104,11 +100,10 @@ const ColumnCell = props => {
     columnData =
       <td
         onClick={() => props.onShowBooking(bookingData)}
-      className={`table__cell--${bookingData.businessUnit
-          .replace(/ /g, '-')
+      className={`table__cell--status-${(bookingData.status || 'pending')
           .toLowerCase()}`
         }>
-          {bookingData.businessUnit}
+          {bookingData.status || 'Pending'}
       </td>
   }
   return columnData

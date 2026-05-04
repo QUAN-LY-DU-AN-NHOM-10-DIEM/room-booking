@@ -4,24 +4,16 @@ const Key = props => (
   <div className="sidebar__box--key key">
     <h3 className="header__heading header__heading--sidebar">Key</h3>
     <div className="key__group">
-      <span className="key__square key__square--bu1"></span>
-      <p className="key__description">Business Unit 1</p>
+      <span className="key__square key__square--pending"></span>
+      <p className="key__description">Pending</p>
     </div>
     <div className="key__group">
-      <span className="key__square key__square--bu2"></span>
-      <p className="key__description">Business Unit 2</p>
+      <span className="key__square key__square--accepted"></span>
+      <p className="key__description">Accepted</p>
     </div>
     <div className="key__group">
-      <span className="key__square key__square--bu3"></span>
-      <p className="key__description">Business Unit 3</p>
-    </div>
-    <div className="key__group">
-      <span className="key__square key__square--bu4"></span>
-      <p className="key__description">Business Unit 4</p>
-    </div>
-    <div className="key__group">
-      <span className="key__square key__square--bu5"></span>
-      <p className="key__description">Business Unit 5</p>
+      <span className="key__square key__square--maintenance"></span>
+      <p className="key__description">Maintenance</p>
     </div>
   </div>
 )
