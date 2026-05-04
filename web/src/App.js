@@ -86,7 +86,7 @@ class App extends Component {
   }
 
   // Makes a booking by updating the database and the React state
-  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }) => {
+  onMakeBooking = ({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants }, history) => {
     this.setState({ isSubmitting: true })
     const existingBookings = this.state.currentRoom.bookings
 
@@ -101,6 +101,7 @@ class App extends Component {
           // If the new booking is successfully saved to the database
           alert(`Your request for ${updatedRoom.name} was submitted. Status: Pending.`)
           updateStateRoom(this, updatedRoom, this.loadMyBookings)
+          if (history) history.push('/bookings')
         })
         .catch(err => {
           this.setState({ isSubmitting: false })
@@ -256,8 +257,8 @@ class App extends Component {
       }
     }
 
-    const requireAuth = render => () =>
-      signedIn ? render() : <Redirect to="/" />
+    const requireAuth = render => (props) =>
+      signedIn ? render(props) : <Redirect to="/" />
 
     return (
       <Router>
@@ -343,7 +344,7 @@ class App extends Component {
                 ))} />
 
                 <Route path="/createbooking" exact render={requireAuth(
-                  () => (
+                  (routeProps) => (
                     <Fragment>
                       {!!decodedToken &&
                         !!roomData &&
@@ -361,7 +362,7 @@ class App extends Component {
                               <BookingForm
                                 user={decodedToken.email}
                                 roomData={currentRoom}
-                                onMakeBooking={this.onMakeBooking}
+                                onMakeBooking={(data) => this.onMakeBooking(data, routeProps.history)}
                                 date={calendarDate}
                                 disableRecurring={disableRecurring}
                                 isSubmitting={isSubmitting}

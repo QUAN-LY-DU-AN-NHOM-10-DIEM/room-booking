@@ -15,7 +15,8 @@ const bookingSchema = new Schema({
   roomId: { type: Schema.ObjectId, ref: 'Room' },
   title: { type: String, required: true, default: 'Meeting' },
   participants: { type: Number, required: true, default: 1 },
-  status: { type: String, enum: ['Pending', 'Accepted', 'Failed'], default: 'Pending' }
+  status: { type: String, enum: ['Pending', 'Accepted', 'Failed'], default: 'Pending' },
+  rejectReason: { type: String }
 })
 
 // Validation to ensure a room cannot be double-booked

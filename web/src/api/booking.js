@@ -94,6 +94,5 @@ export function updateStateRoom(self, updatedRoom, loadMyBookings) {
       roomData: updatedRoomData,
       currentRoom: updatedRoom
     }
-  })
-  loadMyBookings()
+  }, loadMyBookings)
 }

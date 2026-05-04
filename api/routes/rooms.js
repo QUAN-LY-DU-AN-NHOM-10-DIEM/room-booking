@@ -8,7 +8,7 @@ const router = new express.Router()
 
 router.get('/rooms', (req, res) => {
   Room.find()
-    .populate('bookings.user', 'firstName lastName email')
+    // .populate('bookings.user', 'firstName lastName email')
     .then(rooms => {
       res.json(rooms)
     })
@@ -80,6 +80,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       },
       { new: true, runValidators: true }
     )
+      .populate('bookings.user', 'firstName lastName email')
       .then(room => {
         if (!room) {
           Room.findById(id).then(existingRoom => {
@@ -179,7 +180,8 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
       })));
       
       room.save()
-        .then(savedRoom => res.status(201).json(savedRoom))
+        .then(savedRoom => savedRoom.populate('bookings.user', 'firstName lastName email'))
+        .then(populatedRoom => res.status(201).json(populatedRoom))
         .catch(error => res.status(400).json({ error: error.message || error }));
     }).catch(error => res.status(400).json({ error: error.message || error }));
   }
