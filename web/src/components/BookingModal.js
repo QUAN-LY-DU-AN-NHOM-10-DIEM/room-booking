@@ -26,19 +26,22 @@ const BookingModal = props => {
       <h3 className="modal__title">Booking Details</h3>
       {!!props.selectedBooking && (
         <div className="modal__boday">
-          <p className="modal__paragraph">{findRoomInfo(props.selectedBooking.roomId, props.roomData).name}{', Level '}
+          <p className="modal__paragraph"><strong>Title: </strong>{props.selectedBooking['title']}</p>
+          <p className="modal__paragraph"><strong>Name: </strong>{props.selectedBooking.user.firstName} {props.selectedBooking.user.lastName}</p>
+          <p className="modal__paragraph"><strong>Email: </strong>{props.selectedBooking.user.email}</p>
+          <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(props.selectedBooking.roomId, props.roomData).name}{', Level '}
           {findRoomInfo(props.selectedBooking.roomId, props.roomData).floor}</p>
-          <p className="modal__paragraph">{`${momentTimezone
+          <p className="modal__paragraph"><strong>Time: </strong>{`${momentTimezone
               .tz(props.selectedBooking['bookingStart'], 'Asia/Ho_Chi_Minh')
             .format('h.mma')} to ${momentTimezone
               .tz(props.selectedBooking['bookingEnd'], 'Asia/Ho_Chi_Minh')
               .format('h.mma')}`}
-            <p className="modal__paragraph">{`${momentTimezone.tz(props.selectedBooking['bookingStart'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')} to ${momentTimezone.tz(props.selectedBooking['bookingEnd'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')}`}
+            <p className="modal__paragraph"><strong>Date: </strong>{`${momentTimezone.tz(props.selectedBooking['bookingStart'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')} to ${momentTimezone.tz(props.selectedBooking['bookingEnd'], 'Asia/Ho_Chi_Minh').format('MMMM Do, YYYY')}`}
           </p>
           </p>
-          <p className="modal__paragraph"><strong>Business Unit </strong>{props.selectedBooking['businessUnit']}</p>
-          <p className="modal__paragraph"><strong>Purpose </strong>{props.selectedBooking['purpose']}</p>
-          <p className="modal__paragraph"><strong>Description </strong>{props.selectedBooking['description']}</p>
+          <p className="modal__paragraph"><strong>Status: </strong>{props.selectedBooking['status']}</p>
+          <p className="modal__paragraph"><strong>Purpose: </strong>{props.selectedBooking['purpose']}</p>
+          {/* <p className="modal__paragraph"><strong>Description: </strong>{props.selectedBooking['description']}</p> */}
         </div>
       )}
       <a href={`mailto:${props.user}`} className="button">Contact</a>

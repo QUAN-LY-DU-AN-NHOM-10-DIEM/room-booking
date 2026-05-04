@@ -8,6 +8,7 @@ const router = new express.Router()
 
 router.get('/rooms', (req, res) => {
   Room.find()
+    .populate('bookings.user', 'firstName lastName email')
     .then(rooms => {
       res.json(rooms)
     })
