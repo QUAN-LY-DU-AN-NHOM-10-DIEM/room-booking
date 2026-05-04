@@ -7,14 +7,9 @@ const { requireJWT, requireAdmin } = require('../middleware/auth')
 const router = new express.Router()
 
 router.get('/rooms', (req, res) => {
-<<<<<<< HEAD
   const filter = req.query.all === 'true' ? {} : { isDeleted: { $ne: true } }
   Room.find(filter)
     .populate('bookings.user', 'firstName lastName email')
-=======
-  Room.find()
-    // .populate('bookings.user', 'firstName lastName email')
->>>>>>> 43b5c4c98757d968103feaa0b95098882d7c9266
     .then(rooms => {
       res.json(rooms)
     })
