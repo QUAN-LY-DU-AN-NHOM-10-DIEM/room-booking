@@ -36,7 +36,8 @@ const signJWTForUser = (req, res) => {
   const user = req.user
   const token = JWT.sign(
     {
-      email: user.email
+      email: user.email,
+      role: user.role
     },
     jwtSecret,
     {
@@ -76,5 +77,12 @@ module.exports = {
   signUp,
   signIn: passport.authenticate('local', { session: false }),
   requireJWT: passport.authenticate('jwt', { session: false }),
+  requireAdmin: (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+      next()
+    } else {
+      res.status(403).json({ error: 'Admin access required.' })
+    }
+  },
   signJWTForUser
 }

@@ -14,12 +14,16 @@ const rowMapper = (dayHours, props) => {
     // If the data for that hour is a number (not a booking object), there is no booking
     // Add a <td> element that indicates the time slot is available
     if (typeof bookingData == 'number') {
-      tableRow.push(<td className="table__cell--available">
-          <Link to="/createbooking" onClick={() => {
-              props.onSetRoom(props.room._id)
-        }} className="table__link--available">
-            &nbsp;
-          </Link>
+      tableRow.push(<td className="table__cell">
+          {props.room.isMaintenance ? (
+            <span className="table__cell--booked table__cell--status-maintenance">&nbsp;</span>
+          ) : (
+            <Link to="/createbooking" onClick={() => {
+                props.onSetRoom(props.room._id)
+            }} className="table__link--available">
+              &nbsp;
+            </Link>
+          )}
         </td>)
 
      // If the data is an array, there are two booking objects
@@ -83,12 +87,21 @@ const rowMapper = (dayHours, props) => {
 const RoomRow = props => (
   <tr className="table__row">
     <th scope="row" className="table__cell--align-left">
-      <Link to="/createbooking" onClick={() => props.onSetRoom(props.room._id)} className="table__link">{props.room.name}</Link>
-      <ul >
-      {Object.keys(props.room.assets).map(
+      {props.room.isMaintenance ? (
+        <div className="table__link" style={{ cursor: 'not-allowed', color: '#999' }}>
+          {props.room.name}
+          <span style={{ display: 'block', fontSize: '0.7rem', color: '#c0392b', marginTop: '5px' }}>🛠 UNDER MAINTENANCE</span>
+        </div>
+      ) : (
+        <Link to="/createbooking" onClick={() => props.onSetRoom(props.room._id)} className="table__link">
+          {props.room.name}
+        </Link>
+      )}
+      <ul>
+      {props.room.assets && Object.keys(props.room.assets).map(
         asset =>
           props.room.assets[asset] && (
-            <li key={asset} onClick={props.onShowBooking} className="table__data--asset">{formatAssetName(asset)}</li>
+            <li key={asset} className="table__data--asset">{formatAssetName(asset)}</li>
             )
           )}
       </ul>

@@ -27,8 +27,14 @@ const BookingModal = props => {
       {!!props.selectedBooking && (
         <div className="modal__boday">
           <p className="modal__paragraph"><strong>Title: </strong>{props.selectedBooking['title']}</p>
-          <p className="modal__paragraph"><strong>Name: </strong>{props.selectedBooking.user.firstName} {props.selectedBooking.user.lastName}</p>
-          <p className="modal__paragraph"><strong>Email: </strong>{props.selectedBooking.user.email}</p>
+          <p className="modal__paragraph">
+            <strong>Name: </strong>
+            {props.selectedBooking.user ? `${props.selectedBooking.user.firstName} ${props.selectedBooking.user.lastName}` : 'N/A'}
+          </p>
+          <p className="modal__paragraph">
+            <strong>Email: </strong>
+            {props.selectedBooking.user ? props.selectedBooking.user.email : 'N/A'}
+          </p>
           <p className="modal__paragraph"><strong>Room: </strong>{findRoomInfo(props.selectedBooking.roomId, props.roomData).name}{', Level '}
           {findRoomInfo(props.selectedBooking.roomId, props.roomData).floor}</p>
           <p className="modal__paragraph"><strong>Time: </strong>{`${momentTimezone
