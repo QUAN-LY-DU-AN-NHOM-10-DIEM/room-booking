@@ -17,3 +17,11 @@ export function deleteRoom(id) {
 export function createRoom(roomData) {
   return api.post('/rooms', roomData).then(res => res.data)
 }
+
+export function getRoomStats(period) {
+  return api.get(`/rooms/stats/${period}`).then(res => res.data)
+}
+
+export function getTopRooms(metric, limit = 10, period = 'month') {
+  return api.get(`/rooms/top/${metric}/${limit}?period=${period}`).then(res => res.data)
+}
