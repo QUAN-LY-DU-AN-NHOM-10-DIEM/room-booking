@@ -66,7 +66,7 @@ class AdminDashboard extends Component {
         )}
 
         <main className="admin-dashboard__content">
-          {activeTab === 'rooms' ? (
+          {activeTab === 'rooms' && (
             <div className="admin-dashboard__tab-content">
               <RoomManagement 
                 rooms={displayRooms} 
@@ -75,7 +75,8 @@ class AdminDashboard extends Component {
                 onDeleteRoom={onDeleteRoom}
               />
             </div>
-          ) : (
+          )}
+          {activeTab === 'pending' && (
             <div className="admin-dashboard__tab-content">
               <PendingRequests 
                 onApprove={onApprove}
