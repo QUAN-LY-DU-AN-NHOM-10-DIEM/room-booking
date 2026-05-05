@@ -113,15 +113,7 @@ export default function RoomStats({ isAdmin = false }) {
     <div className="rs-dashboard">
       <div className="rs-container">
         
-        {/* Header */}
-        <div className="rs-header">
-          <div className="rs-badge">
-            <Sparkles size={16} />
-            <span>Analytics Dashboard</span>
-          </div>
-          <h1 className="rs-title">Room Booking Analytics</h1>
-          <p className="rs-subtitle">Track room performance, usage patterns, and booking efficiency</p>
-        </div>
+        
 
         {/* Stats Cards */}
         <div className="rs-stats-grid">

@@ -80,22 +80,22 @@
 }
 
 .admin-table td {
-  padding: 1.5rem 2rem;
-  font-size: 1.6rem;
-  border-bottom: 0.1rem solid #cecece;
+  padding: 1.2rem 2rem;
+  font-size: 1.5rem;
+  border-bottom: 0.1rem solid #eee;
   color: #333;
   vertical-align: middle;
 }
 
 .admin-table__actions {
   display: flex;
-  gap: 10px;
+  gap: 0.8rem;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .admin-table tr:hover {
-  background: rgba(237, 28, 36, 0.02);
+  background: rgba(0, 0, 0, 0.01);
 }
 
 .status-badge {
@@ -106,32 +106,42 @@
   border: 0.1rem solid currentColor;
 }
 
-.status-badge--pending { color: #ff9800; }
-.status-badge--accepted { color: #2e7d32; }
-.status-badge--rejected { color: #d32f2f; }
+.status-badge--pending { color: #ff9800; background: rgba(255, 152, 0, 0.08); border-color: rgba(255, 152, 0, 0.2); }
+.status-badge--accepted { color: #2e7d32; background: rgba(46, 125, 50, 0.08); border-color: rgba(46, 125, 50, 0.2); }
+.status-badge--rejected { color: #d32f2f; background: rgba(211, 47, 47, 0.08); border-color: rgba(211, 47, 47, 0.2); }
+.status-badge--maintenance { color: #c0392b; background: rgba(192, 57, 43, 0.08); border-color: rgba(192, 57, 43, 0.2); }
 
 /* Global Form Elements for Admin */
 .admin-form .form__input,
 .admin-table .form__input {
-  width: 100%;
+  width: 100% !important; /* Override global 27rem */
+  box-sizing: border-box;
+  margin: 0; /* Reset global margins */
   height: 4.5rem;
-  border: 0.1rem solid #1c1c1c;
+  border: 0.1rem solid #cecece;
   padding: 0 1.5rem;
   font-size: 1.6rem;
   background: #fff;
   border-radius: 0;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Styled Select Dropdown for both Form and Table */
+.admin-form .form__input:focus,
+.admin-table .form__input:focus {
+  border-color: #ed1c24;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.1);
+}
+
 .admin-form select.form__input,
 .admin-table select.form__input {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231c1c1c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1.2em;
-  padding-right: 3.5rem;
+  background-position: right 1.2rem center;
+  background-size: 1.2rem;
+  padding-right: 4rem;
 }
 
 /* Form Layout */
@@ -153,15 +163,10 @@
 
 .admin-form__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Force 3 columns to avoid overlap */
-  gap: 3rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 800px) {
-  .admin-form__grid {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 3rem;
+  align-items: flex-start;
 }
 
 .admin-form__field {
@@ -170,14 +175,36 @@
   gap: 0.8rem;
 }
 
-/* Use global button styles */
-.admin-dashboard .button {
-  font-size: 1.6rem;
-  padding: 1.2rem 3rem;
-  margin-right: 1rem;
+.admin-form .form__label {
+  margin: 0;
+  padding: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #666;
 }
 
-/* Specific maintenance state */
+@media (max-width: 800px) {
+  .admin-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  border-top: 0.1rem solid #eee;
+  padding-top: 2rem;
+}
+
+.admin-dashboard .button {
+  font-size: 1.4rem;
+  padding: 1.2rem 2.5rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .button--maintenance {
   background: #f39c12;
   border: 0.1rem solid #f39c12;
@@ -185,9 +212,9 @@
 }
 
 .button--maintenance:hover {
-  background: #fafafa;
-  color: #f39c12;
-  border-color: #f39c12;
+  background: #e67e22;
+  border-color: #e67e22;
+  color: #fafafa;
 }
 
 .button--maintenance.active {
@@ -196,7 +223,26 @@
   color: #fafafa;
 }
 
-.button--maintenance.active:hover {
-  background: #fafafa;
-  color: #c0392b;
+.button--success {
+  background: #27ae60;
+  border-color: #27ae60;
+  color: #fafafa;
+}
+
+.button--success:hover {
+  background: #219150;
+  border-color: #219150;
+  color: #fafafa;
+}
+
+.button--danger {
+  background: #d32f2f;
+  border-color: #d32f2f;
+  color: #fafafa;
+}
+
+.button--danger:hover {
+  background: #b71c1c;
+  border-color: #b71c1c;
+  color: #fafafa;
 }

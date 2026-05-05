@@ -96,7 +96,13 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
         }
       })
       .catch(error => {
-        res.status(400).json({ error: error.message || error })
+        // Check if error is due to capacity
+        Room.findById(id).then(room => {
+          if (room && req.body.participants > room.capacity) {
+            return res.status(400).json({ error: `Số người tham dự (${req.body.participants}) vượt quá sức chứa của phòng (${room.capacity}).` });
+          }
+          res.status(400).json({ error: error.message || error })
+        })
       })
 
   // If the booking is a recurring booking
@@ -155,9 +161,12 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
     }
     
 
-    // Handle concurrency for recurring bookings
     Room.findById(id).then(room => {
       if (!room) return res.status(404).json({ error: 'Room not found' });
+      
+      if (req.body.participants > room.capacity) {
+        return res.status(400).json({ error: `Số người tham dự (${req.body.participants}) vượt quá sức chứa của phòng (${room.capacity}).` });
+      }
       
       const hasClash = recurringBookings.some(newBooking => {
         return room.bookings.some(existing => {
@@ -346,6 +355,8 @@ router.get('/admin/bookings/pending', requireJWT, requireAdmin, (req, res) => {
       $project: {
         _id: 1,
         roomName: '$name',
+        roomFloor: '$floor',
+        roomCapacity: '$capacity',
         booking: '$bookings',
         user: {
           firstName: '$user_details.firstName',
