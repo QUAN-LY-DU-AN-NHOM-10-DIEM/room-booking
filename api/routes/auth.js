@@ -4,16 +4,17 @@ const {
   signIn,
   signInWithGoogle,
   signJWTForUser,
+  syncRole,
   refresh
 } = require('../middleware/auth')
 
 const router = new express.Router()
 
 // Sign up
-router.post('/auth/sign-up', signUp, signJWTForUser)
+router.post('/auth/sign-up', signUp, syncRole, signJWTForUser)
 
 // Sign in
-router.post('/auth', signIn, signJWTForUser)
+router.post('/auth', signIn, syncRole, signJWTForUser)
 
 // Google sign in (ID token from client)
 router.post('/api/v1/auth/google', signInWithGoogle, signJWTForUser)

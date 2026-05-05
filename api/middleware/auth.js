@@ -53,14 +53,13 @@ const signUp = (req, res, next) => {
     provider: 'local'
   })
 
-  User.register(user, req.body.password, (error, user) => {
+  User.register(user, req.body.password, (error, registeredUser) => {
     if (error) {
-      next(error)
+      return next(error)
     }
+    req.user = registeredUser
+    next()
   })
-
-  req.user = user
-  next()
 }
 
 function signInWithGoogle(req, res, next) {
@@ -138,15 +137,14 @@ function signInWithGoogle(req, res, next) {
           user.avatar_url = payload.picture || user.avatar_url
           user.provider = 'google'
           user.google_sub = payload.sub
-          user.role = user.role || 'staff'
           user.last_login_at = new Date()
-
-          // Check if email is in admin whitelist
-          return AdminWhitelist.findOne({ email: normalizedEmail })
+          return user
+        })
+        .then(user => {
+          // Sync user role with admin whitelist
+          return AdminWhitelist.findOne({ email: user.email.toLowerCase() })
             .then(whitelistEntry => {
-              if (whitelistEntry) {
-                user.role = 'admin'
-              }
+              user.role = whitelistEntry ? 'admin' : 'staff'
               return user.save()
             })
         })
@@ -205,6 +203,26 @@ const signJWTForUser = (req, res) => {
   }).catch(error => {
     res.status(500).json({ error: 'Failed to create refresh token' })
   })
+}
+
+const syncRole = (req, res, next) => {
+  const user = req.user
+  if (!user || !user.email) return next()
+
+  AdminWhitelist.findOne({ email: user.email.toLowerCase() })
+    .then(whitelistEntry => {
+      const targetRole = whitelistEntry ? 'admin' : 'staff'
+      if (user.role !== targetRole) {
+        user.role = targetRole
+        return user.save()
+      }
+      return user
+    })
+    .then(updatedUser => {
+      req.user = updatedUser
+      next()
+    })
+    .catch(next)
 }
 
 const refresh = (req, res) => {
@@ -278,5 +296,6 @@ module.exports = {
     }
   },
   signJWTForUser,
+  syncRole,
   refresh
 }
