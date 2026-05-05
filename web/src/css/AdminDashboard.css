@@ -246,3 +246,74 @@
   border-color: #b71c1c;
   color: #fafafa;
 }
+
+/* Admin Table Enhancements */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border: 0.1rem solid #eee;
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.admin-table th {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  text-align: left;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #666;
+  border-bottom: 0.2rem solid #eee;
+}
+
+.admin-table td {
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  border-bottom: 0.1rem solid #eee;
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background-color: #fcfcfc;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.capacity-warning {
+  color: #e74c3c;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 0.2rem 0.8rem;
+  border-radius: 0.4rem;
+}
+
+.room-info-cell small {
+  display: block;
+  color: #888;
+  font-size: 1.2rem;
+  margin-top: 0.2rem;
+}
+
+.time-cell {
+  font-weight: 500;
+}
+
+.time-cell small {
+  display: block;
+  color: #666;
+  font-weight: 400;
+}
+
+.action-cell {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}

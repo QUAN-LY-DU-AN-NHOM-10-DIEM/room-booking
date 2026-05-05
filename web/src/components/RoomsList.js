@@ -31,7 +31,7 @@ const RoomsList = props => (
     </thead>
     <tbody className="table__body">
       {props.rooms &&
-        roomSorter(props.rooms, '8').map(room => (
+        roomSorter(props.rooms.filter(room => !room.isDeleted), '8').map(room => (
           <RoomRow
             key={room._id}
             room={room}
@@ -69,7 +69,7 @@ const RoomsList = props => (
     </thead>
     <tbody className="table__body">
       {props.rooms &&
-        roomSorter(props.rooms, '13').map(room => (
+        roomSorter(props.rooms.filter(room => !room.isDeleted), '13').map(room => (
           <RoomRow
             key={room._id}
             room={room}

@@ -80,18 +80,26 @@ class PendingRequests extends Component {
                 const isOverCapacity = item.booking.participants > item.roomCapacity;
                 return (
                   <tr key={item.booking._id}>
-                    <td>{item.roomName} (Floor {item.roomFloor})</td>
+                    <td className="room-info-cell">
+                      {item.roomName}
+                      <small>Floor {item.roomFloor}</small>
+                    </td>
                     <td>{item.roomCapacity}</td>
-                    <td style={isOverCapacity ? { color: '#e74c3c', fontWeight: 'bold' } : {}}>
-                      {item.booking.participants}
-                      {isOverCapacity && <span title="Participants exceed capacity" style={{ marginLeft: '5px' }}>⚠️</span>}
-                    </td>
-                    <td>{item.user.firstName} {item.user.lastName}<br/><small>{item.user.email}</small></td>
                     <td>
-                      {moment(item.booking.bookingStart).format('DD MMM YYYY')}<br/>
-                      {moment(item.booking.bookingStart).format('HH:mm')} - {moment(item.booking.bookingEnd).format('HH:mm')}
+                      <span className={isOverCapacity ? 'capacity-warning' : ''}>
+                        {item.booking.participants}
+                        {isOverCapacity && <span title="Participants exceed capacity">⚠️</span>}
+                      </span>
                     </td>
-                    <td>
+                    <td className="room-info-cell">
+                      {item.user.firstName} {item.user.lastName}
+                      <small>{item.user.email}</small>
+                    </td>
+                    <td className="time-cell">
+                      {moment(item.booking.bookingStart).format('DD MMM YYYY')}
+                      <small>{moment(item.booking.bookingStart).format('HH:mm')} - {moment(item.booking.bookingEnd).format('HH:mm')}</small>
+                    </td>
+                    <td className="action-cell">
                       <button 
                         onClick={() => this.handleApprove(item._id, item.booking._id)} 
                         className="button button--primary"

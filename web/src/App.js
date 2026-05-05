@@ -323,8 +323,11 @@ class App extends Component {
     const date = this.state.calendarDate
 
     if (!!roomData) {
-      // Send all room data and the selected floor, return filtered floors and store in filteredData
-      filteredData = onFilterByFloor(floorParam, roomData)
+      // Filter out hidden rooms first
+      let activeRooms = roomData.filter(room => !room.isDeleted)
+      
+      // Send active room data and the selected floor, return filtered floors and store in filteredData
+      filteredData = onFilterByFloor(floorParam, activeRooms)
       // Send the previously filtered data along with the feature params
       filteredData = onFilterByFeature(featureParams, filteredData)
       // Send the previously filtered data along with the capacity params
@@ -568,7 +571,7 @@ class App extends Component {
         
         let currentRoom = null
         if (rooms && rooms.length > 0) {
-          currentRoom = rooms[0]
+          currentRoom = rooms.find(r => !r.isDeleted) || rooms[0]
         }
         
         this.setState({ 
