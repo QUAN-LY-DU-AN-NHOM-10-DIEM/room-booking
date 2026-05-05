@@ -25,7 +25,7 @@ yarn install
 hoặc
 
 ```bash
-npm install
+npm i --legacy-peer-deps
 ```
 
 ## Bước 3: Cài Đặt Frontend (Web)
