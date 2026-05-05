@@ -386,7 +386,7 @@ class App extends Component {
                     {!!decodedToken && !!roomData && !loading && (
                       <div className="wrapper">
                         <div className="header header__nav header--flex">
-                          <h1 className="header__heading header__heading--main">Company Name Here</h1>
+                          <h1 className="header__heading header__heading--main">Company Name Here{decodedToken && decodedToken.role === 'admin' ? ' (Admin)' : ''}</h1>
                           <NavBar
                             signOut={signOut}
                             loadMyBookings={loadMyBookings}
@@ -449,11 +449,11 @@ class App extends Component {
                         !!currentRoom && (
                           <div className="wrapper">
                             <header className="header header__nav header--flex">
-                              <h1 className="header__heading header__heading--main">Company Name Here</h1>
+                              <h1 className="header__heading header__heading--main">Company Name Here{decodedToken && decodedToken.role === 'admin' ? ' (Admin)' : ''}</h1>
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}
+                                user={decodedToken}
                               />
                             </header>
                             <div className="wrapper__content">
@@ -488,11 +488,11 @@ class App extends Component {
                         !!roomData && (
                           <div className="wrapper">
                             <div className="header header__nav header--flex">
-                              <h1 className="header__heading header__heading--main">Company Name Here</h1>
+                              <h1 className="header__heading header__heading--main">Company Name Here{decodedToken && decodedToken.role === 'admin' ? ' (Admin)' : ''}</h1>
                               <NavBar
                                 signOut={signOut}
                                 loadMyBookings={loadMyBookings}
-                                user={signedIn ? decodedToken.sub : null}
+                                user={decodedToken}
                               />
                             </div>
                             <div className="wrapper__content--bookings">
