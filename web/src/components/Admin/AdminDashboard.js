@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import RoomManagement from './RoomManagement';
 import PendingRequests from './PendingRequests';
+import RoomStats from '../RoomStats';
 import '../../css/AdminDashboard.css';
 
 class AdminDashboard extends Component {
   state = {
-    activeTab: 'rooms', // 'rooms' or 'pending'
+    activeTab: 'rooms', // 'rooms', 'pending', or 'stats'
     showHidden: false
   };
 
@@ -42,6 +43,12 @@ class AdminDashboard extends Component {
           >
             Booking Requests
           </button>
+          <button 
+            className={`admin-dashboard__nav-item ${activeTab === 'stats' ? 'active' : ''}`}
+            onClick={() => this.setState({ activeTab: 'stats' })}
+          >
+            Room Statistics
+          </button>
         </nav>
 
         {activeTab === 'rooms' && (
@@ -74,6 +81,11 @@ class AdminDashboard extends Component {
                 onApprove={onApprove}
                 onReject={onReject}
               />
+            </div>
+          )}
+          {activeTab === 'stats' && (
+            <div className="admin-dashboard__tab-content">
+              <RoomStats isAdmin={true} />
             </div>
           )}
         </main>

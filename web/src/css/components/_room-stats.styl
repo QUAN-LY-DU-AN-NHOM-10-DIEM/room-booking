@@ -1,0 +1,219 @@
+// _room-stats.styl
+
+.room-stats
+  background offWhite
+  color darkGrey
+  font-family proxima
+  padding 3rem
+
+  &__container
+    margin 0 auto
+    max-width 120rem
+
+  // --- HEADER ---
+  &__header
+    margin-bottom 3rem
+
+  &__badge
+    align-items center
+    border 0.1rem solid mediumGrey
+    border-radius 2rem
+    display inline-flex
+    font-size 1.4rem
+    margin-bottom 1rem
+    padding 0.5rem 1.5rem
+    
+    svg
+      margin-right 0.5rem
+
+  &__title
+    font-size 3.2rem
+    font-weight 700
+    margin 0 0 1rem 0
+
+  &__subtitle
+    color darkGrey
+    font-size 1.6rem
+    font-weight 400
+    margin 0
+
+  // --- STATS GRID ---
+  &__grid
+    display grid
+    gap 2rem
+    grid-template-columns repeat(auto-fit, minmax(20rem, 1fr))
+    margin-bottom 4rem
+
+  &__card
+    background #ffffff
+    border 0.1rem solid mediumGrey
+    -webkit-box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    -moz-box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    padding 2rem
+    transition box-shadow 0.2s ease-in-out
+
+    &:hover
+      -webkit-box-shadow 2px 2px 8px 0px rgba(206,206,206,1)
+      -moz-box-shadow 2px 2px 8px 0px rgba(206,206,206,1)
+      box-shadow 2px 2px 8px 0px rgba(206,206,206,1)
+
+  &__icon-wrapper
+    margin-bottom 1rem
+    svg
+      height 2.4rem
+      width 2.4rem
+
+  &__card-label
+    color darkGrey
+    font-size 1.4rem
+    margin 0 0 0.5rem 0
+    text-transform uppercase
+
+  &__card-value
+    font-size 2.8rem
+    font-weight 700
+    margin 0
+
+  // --- SECTION BOX (Dành cho Chart & Top Rooms) ---
+  &__section
+    background #ffffff
+    border 0.1rem solid mediumGrey
+    -webkit-box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    -moz-box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    box-shadow 0px 2px 5px 0px rgba(206,206,206,1)
+    margin-bottom 4rem
+    padding 2rem
+
+  &__section-header
+    align-items center
+    display flex
+    justify-content space-between
+    margin-bottom 2rem
+
+  &__section-title
+    align-items center
+    display flex
+    font-size 2rem
+    font-weight 600
+    margin 0
+    svg
+      margin-right 1rem
+
+  // --- TABS (Bộ lọc chuyển đổi Weekly/Monthly/Metrics) ---
+  &__tabs
+    border 0.1rem solid mediumGrey
+    display flex
+    overflow hidden
+
+  &__tab
+    background #ffffff
+    border none
+    border-right 0.1rem solid mediumGrey
+    color darkGrey
+    cursor pointer
+    font-family proxima
+    font-size 1.4rem
+    padding 0.8rem 1.6rem
+    transition background 0.2s
+    
+    &:last-child
+      border-right none
+
+    &:hover
+      background lightGrey
+
+    &--active
+      background darkGrey
+      color #ffffff
+      &:hover
+        background darkGrey
+
+  // --- TOP ROOMS LIST ---
+  &__list
+    display flex
+    flex-direction column
+
+  &__list-item
+    align-items center
+    border-bottom 0.1rem solid mediumGrey
+    display flex
+    padding 2rem 1rem
+    transition background 0.2s
+
+    &:last-child
+      border-bottom none
+
+    &:hover
+      background lightGrey
+
+  &__rank
+    align-items center
+    display flex
+    font-size 2rem
+    font-weight 700
+    justify-content center
+    margin-right 2rem
+    min-width 4rem
+    
+    svg
+      height 3rem
+      width 3rem
+
+  &__room-info
+    flex 1
+
+  &__room-name
+    font-size 1.8rem
+    font-weight 600
+    margin 0 0 0.5rem 0
+
+  &__room-meta
+    color darkGrey
+    font-size 1.4rem
+    margin 0
+
+  &__metrics
+    display flex
+    gap 4rem
+
+  &__metric
+    text-align left
+
+    &-label
+      color darkGrey
+      font-size 1.2rem
+      margin 0 0 0.5rem 0
+      text-transform uppercase
+
+    &-value
+      align-items center
+      display flex
+      font-size 1.8rem
+      font-weight 700
+      margin 0
+      
+      svg
+        height 1.6rem
+        margin-right 0.5rem
+        width 1.6rem
+
+  &__progress
+    margin-left 4rem
+    width 15rem
+
+    &-label
+      display flex
+      font-size 1.2rem
+      justify-content space-between
+      margin-bottom 0.5rem
+
+    &-bar
+      background mediumGrey
+      height 0.8rem
+      overflow hidden
+      width 100%
+
+    &-fill
+      background darkGrey
+      height 100%
