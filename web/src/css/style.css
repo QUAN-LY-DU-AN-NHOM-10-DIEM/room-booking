@@ -351,11 +351,15 @@ td.rdtYear:hover {
   background: #f39c12;
 }
 .key__square--accepted {
-  background: #27ae60;
+  background: #828282;
 }
 .key__square--maintenance {
   background: #c0392b;
 }
+.key__square--available {
+  background: #ffffff;
+}
+
 .ReactModalPortal .ReactModal__Overlay {
   -ms-flex-align: center;
       align-items: center;
@@ -561,12 +565,12 @@ td.rdtYear:hover {
   width: 50%;
 }
 .table__cell--status-accepted {
-  background: #27ae60;
+  background: #828282;
   padding: 3rem 0;
   cursor: pointer;
 }
 .table__cell--status-accepted.table__cell--first-half-hour {
-  background: #27ae60;
+  background: #828282;
   cursor: pointer;
   display: block;
   float: left;
@@ -574,7 +578,7 @@ td.rdtYear:hover {
   width: 50%;
 }
 .table__cell--status-accepted.table__cell--second-half-hour {
-  background: #27ae60;
+  background: #828282;
   cursor: pointer;
   display: block;
   float: right;
