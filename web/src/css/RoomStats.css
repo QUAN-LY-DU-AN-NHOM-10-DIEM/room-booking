@@ -1,212 +1,193 @@
-/* RoomStats.css - Light Mode Version */
-:root {
-  --bg-primary: #ffffff; /* Nền tổng thể sáng */
-  --bg-secondary: #FFFFFF; /* Nền card trắng */
-  --text-main: #1F2937; /* Chữ xám đậm (gần đen) */
-  --text-muted: #6B7280; /* Chữ xám nhạt */
-  --border-light: #E5E7EB; /* Viền xám nhạt */
-  --accent-cyan: #0284C7;
-  --accent-purple: #7C3AED;
-  --accent-pink: #DB2777;
-}
+/* RoomStats.css - Admin Dashboard Aligned Version */
 
 .rs-dashboard {
   min-height: 100vh;
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  padding: 2rem;
-  font-family: 'Inter', "proxima-nova", sans-serif;
+  background: #fafafa;
+  color: #1c1c1c;
+  padding: 4rem;
+  font-family: 'Raleway', sans-serif;
 }
 
 .rs-container {
-  max-width: 1400px;
+  max-width: 1600px;
+  width: 95%;
   margin: 0 auto;
 }
 
 /* Header */
 .rs-header {
-  margin-bottom: 3rem;
-  text-align: center;
+  margin-bottom: 4rem;
+  text-align: left;
+  border-bottom: 0.1rem solid #1c1c1c;
+  padding-bottom: 2rem;
 }
 
 .rs-header .rs-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #E0F2FE;
-  color: var(--accent-cyan);
-  border-radius: 50px;
-  font-size: 0.875rem;
-  border: 1px solid #BAE6FD;
-  margin-bottom: 1rem;
-  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  color: #1c1c1c;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 0.1rem solid currentColor;
+  margin-bottom: 1.5rem;
 }
 
 .rs-header .rs-title {
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 3.2rem;
+  color: #1c1c1c;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
 }
 
 .rs-header .rs-subtitle {
-  color: var(--text-muted);
-  font-size: 1.125rem;
+  font-size: 1.8rem;
+  color: #666;
 }
 
 /* Stats Grid */
 .rs-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  gap: 3rem;
+  margin-bottom: 4rem;
 }
 
 .rs-stat-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border-radius: 20px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  background: #fff;
+  border: 0.1rem solid #cecece;
+  box-shadow: 0px 2px 5px 0px #cecece;
+  padding: 3rem;
+  transition: background 0.2s;
 }
 
 .rs-stat-card:hover {
-  transform: translateY(-5px);
-  border-color: #BAE6FD;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Hiệu ứng chớp sáng nhẹ khi hover card */
-.rs-stat-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
-  transform: skewX(-20deg);
-  transition: 0.5s;
-}
-
-.rs-stat-card:hover::after {
-  left: 150%;
+  background: rgba(237, 28, 36, 0.02);
+  border-color: #1c1c1c;
 }
 
 .rs-stat-icon-wrapper {
   display: inline-flex;
-  padding: 0.75rem;
-  border-radius: 12px;
-  background: #F3F4F6;
-  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #eee;
+  border: 0.1rem solid #cecece;
+  margin-bottom: 1.5rem;
 }
 
 .rs-stat-value {
-  font-size: 2.25rem;
+  font-size: 2.8rem;
   font-weight: 700;
   margin-top: 0.5rem;
-  color: var(--text-main);
+  color: #1c1c1c;
 }
 
-/* Chart & Controls */
+/* Chart & Controls (Section Boxes) */
 .rs-section-box {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 3rem;
+  background: #fff;
+  border: 0.1rem solid #cecece;
+  box-shadow: 0px 2px 5px 0px #cecece;
+  padding: 3rem;
+  margin-bottom: 4rem;
 }
 
 .rs-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .rs-tabs {
   display: flex;
-  background: #F3F4F6;
-  padding: 0.25rem;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
+  gap: 1rem;
 }
 
 .rs-tabs button {
-  padding: 0.5rem 1.5rem;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
+  background: #fafafa;
+  border: 0.1rem solid #1c1c1c;
+  padding: 1.2rem 3rem;
+  font-size: 1.6rem;
   font-weight: 600;
+  color: #1c1c1c;
   cursor: pointer;
   transition: all 0.2s;
+  text-transform: uppercase;
+  font-family: 'Raleway', sans-serif;
+}
+
+.rs-tabs button:hover {
+  background: #1c1c1c;
+  color: #fafafa;
 }
 
 .rs-tabs button.active {
-  background: #FFFFFF;
-  color: var(--accent-cyan);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: #ed1c24;
+  border-color: #ed1c24;
+  color: #fafafa;
 }
 
 /* Ranking Table */
 .rs-ranking-table {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
+  background: #fafafa;
+  border: 0.1rem solid #cecece;
+  box-shadow: 0px 2px 5px 0px #cecece;
   padding: 0;
   overflow: hidden;
 }
 
 .rs-ranking-header {
   padding: 1.5rem 2rem;
-  background: #F9FAFB;
-  border-bottom: 1px solid var(--border-light);
+  background: #eee;
+  border-bottom: 0.1rem solid #cecece;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: #1c1c1c;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.4rem;
 }
 
 .rs-metric-filters {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .rs-metric-filters button {
-  background: #FFFFFF;
-  border: 1px solid var(--border-light);
-  color: var(--text-muted);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  background: #fafafa;
+  border: 0.1rem solid #1c1c1c;
+  color: #1c1c1c;
+  padding: 0.8rem 2rem;
   cursor: pointer;
   transition: all 0.2s;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-family: 'Raleway', sans-serif;
+  font-size: 1.2rem;
 }
 
 .rs-metric-filters button:hover {
-  background: #F3F4F6;
+  background: #1c1c1c;
+  color: #fafafa;
 }
 
 .rs-metric-filters button.active {
-  background: #E0F2FE;
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  background: #ed1c24;
+  border-color: #ed1c24;
+  color: #fafafa;
 }
 
 .rs-room-row {
   display: flex;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--border-light);
-  transition: background 0.3s;
+  border-bottom: 0.1rem solid #cecece;
+  background: #fff;
+  transition: background 0.2s;
 }
 
 .rs-room-row:last-child {
@@ -214,58 +195,51 @@
 }
 
 .rs-room-row:hover {
-  background: #F9FAFB;
+  background: rgba(237, 28, 36, 0.02);
 }
 
+/* Rank Badges - Removed Gradients */
 .rs-rank-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 4.5rem;
+  height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 1.25rem;
-  background: #F3F4F6;
-  margin-right: 1.5rem;
-  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.6rem;
+  background: #eee;
+  border: 0.1rem solid #1c1c1c;
+  margin-right: 2rem;
+  color: #1c1c1c;
 }
 
-/* Màu huy chương Top 3 */
-.rs-rank-badge.rank-1 {
-  background: linear-gradient(135deg, #FDE68A, #F59E0B);
-  color: #FFFFFF;
-  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
-}
-.rs-rank-badge.rank-2 {
-  background: linear-gradient(135deg, #E5E7EB, #9CA3AF);
-  color: #FFFFFF;
-}
-.rs-rank-badge.rank-3 {
-  background: linear-gradient(135deg, #FED7AA, #F97316);
-  color: #FFFFFF;
-}
+/* Optional: Emphasize Top 3 slightly but stay in theme */
+.rs-rank-badge.rank-1 { border-color: #ed1c24; color: #ed1c24; }
+.rs-rank-badge.rank-2 { border-color: #666; color: #1c1c1c; }
+.rs-rank-badge.rank-3 { border-color: #333; color: #1c1c1c; }
 
 .rs-room-info {
   flex: 1;
 }
 
 .rs-room-info h3 {
-  font-size: 1.25rem;
-  margin: 0 0 0.25rem 0;
-  color: var(--text-main);
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem 0;
+  color: #1c1c1c;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
 .rs-room-info p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  font-size: 1.4rem;
+  color: #666;
   margin: 0;
 }
 
 .rs-room-stats {
   display: flex;
   gap: 3rem;
+  align-items: center;
 }
 
 .rs-stat-item {
@@ -273,17 +247,16 @@
 }
 
 .rs-stat-item .label {
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  font-weight: 600;
+  color: #666;
+  font-weight: 700;
 }
 
 .rs-stat-item .value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-main);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1c1c1c;
 }
 
 .rs-progress-container {
@@ -291,15 +264,14 @@
   margin-left: 3rem;
 }
 
+/* Removed rounded corners and gradients for Progress Bar */
 .rs-progress-bar {
-  height: 8px;
-  background: #E5E7EB;
-  border-radius: 4px;
-  overflow: hidden;
+  height: 1rem;
+  background: #eee;
+  border: 0.1rem solid #cecece;
 }
 
 .rs-progress-fill {
   height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  background: #ed1c24; 
 }
