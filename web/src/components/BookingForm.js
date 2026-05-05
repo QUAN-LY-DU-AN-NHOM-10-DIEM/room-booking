@@ -73,6 +73,12 @@ function BookingForm({ onMakeBooking, user, roomData, date, updateCalendar, onSh
             const description = formData.description.value
             const title = formData.title.value
             const participants = parseInt(formData.participants.value) || 1
+            
+            if (participants > roomData.capacity) {
+              alert(`Số người tham dự (${participants}) vượt quá sức chứa của phòng (${roomData.capacity}).`);
+              return;
+            }
+
           onMakeBooking({ startDate, endDate, businessUnit, purpose, roomId, recurringData, title, participants })
         }}>
         <div className="content__calendar">

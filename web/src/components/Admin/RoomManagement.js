@@ -101,7 +101,16 @@ class RoomManagement extends Component {
                 />
               </div>
             </div>
-            <button type="submit" className="button button--primary">Create Room</button>
+            <div className="admin-form__actions">
+              <button 
+                type="button" 
+                onClick={() => this.setState({ showAddForm: false })} 
+                className="button button--alternative"
+              >
+                Cancel
+              </button>
+              <button type="submit" className="button button--primary">Create Room</button>
+            </div>
           </form>
         )}
         <table className="admin-table">
@@ -125,9 +134,11 @@ class RoomManagement extends Component {
                       className="form__input"
                     />
                   ) : (
-                    <span>
-                      {room.name} {room.isDeleted && <span className="status-badge status-badge--rejected" style={{ fontSize: '0.8rem', padding: '2px 8px', marginLeft: '10px' }}>Hidden</span>}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontWeight: 600 }}>{room.name}</span>
+                      {room.isDeleted && <span className="status-badge status-badge--rejected">Hidden</span>}
+                      {room.isMaintenance && <span className="status-badge status-badge--maintenance">🛠 Maintenance</span>}
+                    </div>
                   )}
                 </td>
                 <td>
@@ -155,35 +166,32 @@ class RoomManagement extends Component {
                 <td>
                   {editingRoom === room._id ? (
                     <div className="admin-table__actions">
-                      <button onClick={this.handleUpdate} className="button button--primary">Save</button>
+                      <button onClick={this.handleUpdate} className="button button--success">Save</button>
                       
                       <button 
                         onClick={() => this.props.onUpdateRoom(room._id, { isMaintenance: !room.isMaintenance })} 
                         className={`button button--maintenance ${room.isMaintenance ? 'active' : ''}`}
                       >
-                        {room.isMaintenance ? '🛠 Maintenance: ON' : 'Set Maintenance'}
+                        {room.isMaintenance ? '🛠 ON' : 'Set Maintenance'}
                       </button>
 
                       {room.isDeleted ? (
-                        <button onClick={() => this.props.onUpdateRoom(room._id, { isDeleted: false })} className="button button--primary" style={{ background: '#27ae60', border: 'none' }}>Restore</button>
+                        <button onClick={() => this.props.onUpdateRoom(room._id, { isDeleted: false })} className="button button--success">Restore</button>
                       ) : (
                         <button onClick={() => {
                           if (window.confirm('Are you sure you want to hide this room?')) {
                             onDeleteRoom(room._id);
                             this.setState({ editingRoom: null });
                           }
-                        }} className="button button--alternative">Hide Room</button>
+                        }} className="button button--danger">Hide</button>
                       )}
 
                       <button onClick={() => this.setState({ editingRoom: null })} className="button button--alternative">Cancel</button>
                     </div>
                   ) : (
-                    <Fragment>
+                    <div className="admin-table__actions">
                       <button onClick={() => this.startEdit(room)} className="button button--primary">Edit</button>
-                      {room.isMaintenance && (
-                         <span className="status-badge status-badge--rejected" style={{ marginLeft: '10px' }}>🛠 Maintenance</span>
-                      )}
-                    </Fragment>
+                    </div>
                   )}
                 </td>
               </tr>

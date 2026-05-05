@@ -68,43 +68,53 @@ class PendingRequests extends Component {
             <thead>
               <tr>
                 <th>Room</th>
+                <th>Capacity</th>
+                <th>Participants</th>
                 <th>User</th>
                 <th>Time</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {bookings.map(item => (
-                <tr key={item.booking._id}>
-                  <td>{item.roomName} (Floor {item.roomFloor})</td>
-                  <td>{item.user.firstName} {item.user.lastName}<br/><small>{item.user.email}</small></td>
-                  <td>
-                    {moment(item.booking.bookingStart).format('DD MMM YYYY')}<br/>
-                    {moment(item.booking.bookingStart).format('HH:mm')} - {moment(item.booking.bookingEnd).format('HH:mm')}
-                  </td>
-                  <td>
-                    <button 
-                      onClick={() => this.handleApprove(item._id, item.booking._id)} 
-                      className="button button--primary"
-                      disabled={loading}
-                    >
-                      Approve
-                    </button>
-                    <button 
-                      onClick={() => {
-                        const reason = window.prompt('Enter rejection reason:');
-                        if (reason !== null) {
-                          this.handleReject(item._id, item.booking._id, reason);
-                        }
-                      }} 
-                      className="button button--alternative"
-                      disabled={loading}
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {bookings.map(item => {
+                const isOverCapacity = item.booking.participants > item.roomCapacity;
+                return (
+                  <tr key={item.booking._id}>
+                    <td>{item.roomName} (Floor {item.roomFloor})</td>
+                    <td>{item.roomCapacity}</td>
+                    <td style={isOverCapacity ? { color: '#e74c3c', fontWeight: 'bold' } : {}}>
+                      {item.booking.participants}
+                      {isOverCapacity && <span title="Participants exceed capacity" style={{ marginLeft: '5px' }}>⚠️</span>}
+                    </td>
+                    <td>{item.user.firstName} {item.user.lastName}<br/><small>{item.user.email}</small></td>
+                    <td>
+                      {moment(item.booking.bookingStart).format('DD MMM YYYY')}<br/>
+                      {moment(item.booking.bookingStart).format('HH:mm')} - {moment(item.booking.bookingEnd).format('HH:mm')}
+                    </td>
+                    <td>
+                      <button 
+                        onClick={() => this.handleApprove(item._id, item.booking._id)} 
+                        className="button button--primary"
+                        disabled={loading}
+                      >
+                        Approve
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const reason = window.prompt('Enter rejection reason:');
+                          if (reason !== null) {
+                            this.handleReject(item._id, item.booking._id, reason);
+                          }
+                        }} 
+                        className="button button--alternative"
+                        disabled={loading}
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
