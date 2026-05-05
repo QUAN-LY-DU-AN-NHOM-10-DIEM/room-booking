@@ -47,6 +47,7 @@ const durationHours = (bookingStart, bookingEnd) => {
 // Make a booking
 router.put('/rooms/:id', requireJWT, (req, res) => {
   const { id } = req.params
+  const initialStatus = (req.user && req.user.role === 'admin') ? 'Accepted' : 'Pending'
 
   // If the recurring array is empty, the booking is not recurring
   if (req.body.recurring.length === 0) {
@@ -72,7 +73,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
             user: req.user,
             startHour: dateAEST(req.body.bookingStart).format('H.mm'),
             duration: durationHours(req.body.bookingStart, req.body.bookingEnd),
-            status: 'Pending',
+            status: initialStatus,
             title: req.body.title || 'Meeting',
             participants: req.body.participants || 1,
             ...req.body
@@ -175,7 +176,7 @@ router.put('/rooms/:id', requireJWT, (req, res) => {
 
       room.bookings.push(...recurringBookings.map(b => ({
         ...b, 
-        status: 'Pending',
+        status: initialStatus,
         title: req.body.title || 'Meeting',
         participants: req.body.participants || 1
       })));

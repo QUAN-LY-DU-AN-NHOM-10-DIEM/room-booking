@@ -113,7 +113,8 @@ class App extends Component {
         .then(updatedRoom => {
           this.setState({ isSubmitting: false })
           // If the new booking is successfully saved to the database
-          alert(`Your request for ${updatedRoom.name} was submitted. Status: Pending.`)
+          const status = this.state.decodedToken.role === 'admin' ? 'Accepted' : 'Pending'
+          alert(`Your request for ${updatedRoom.name} was submitted. Status: ${status}.`)
           updateStateRoom(this, updatedRoom, this.loadMyBookings)
           if (history) history.push('/bookings')
         })
