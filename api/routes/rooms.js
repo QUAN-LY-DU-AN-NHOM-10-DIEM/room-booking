@@ -298,13 +298,31 @@ router.get('/rooms/top/:metric/:limit?', (req, res) => {
 router.delete('/rooms/:id/:bookingId', requireJWT, (req, res) => {
   const { id } = req.params
   const { bookingId } = req.params
-  Room.findByIdAndUpdate(
-    id,
-    { $pull: { bookings: { _id: bookingId } } },
-    { new: true }
-  )
+  Room.findById(id)
     .then(room => {
-      res.status(201).json(room)
+      if (!room) {
+        res.status(404).json({ error: 'Room not found' })
+        return null
+      }
+      const booking = room.bookings.id(bookingId)
+      if (!booking) {
+        res.status(404).json({ error: 'Booking not found' })
+        return null
+      }
+      const isOwner = booking.user && booking.user.toString() === req.user._id.toString()
+      const isAdmin = req.user.role === 'admin'
+      if (!isOwner && !isAdmin) {
+        res.status(403).json({ error: 'You are not allowed to delete this booking' })
+        return null
+      }
+      return Room.findByIdAndUpdate(
+        id,
+        { $pull: { bookings: { _id: bookingId } } },
+        { new: true }
+      )
+    })
+    .then(room => {
+      if (room) res.status(201).json(room)
     })
     .catch(error => {
       res.status(400).json({ error })

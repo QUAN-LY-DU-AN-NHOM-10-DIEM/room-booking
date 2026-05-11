@@ -143,7 +143,7 @@ class App extends Component {
           this.loadMyBookings,
         )
       })
-      .catch(error => console.error(error.message))
+      .catch(error => alert(error.response?.data?.error || error.message || 'Failed to delete booking'))
   }
 
   // Admin Methods
