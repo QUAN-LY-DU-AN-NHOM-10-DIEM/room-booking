@@ -11,11 +11,29 @@
 ## Bước 1: Clone Dự Án
 
 ```bash
-git clone https://github.com/julia-/room-booking-system
+git clone https://github.com/QUAN-LY-DU-AN-NHOM-10-DIEM/room-booking.git
 cd room-booking
 ```
 
-## Bước 2: Cài Đặt Backend (API)
+## Bước 2: Cấu Hình Biến Môi Trường
+
+Sao chép file `.env.example` thành `.env` trong cả hai thư mục `api` và `web`, sau đó điền các giá trị tương ứng:
+
+```bash
+cp api/.env.example api/.env
+cp web/.env.example web/.env
+```
+
+| Biến | Mô tả |
+|------|-------|
+| `MONGO_URI` | Đường dẫn kết nối MongoDB |
+| `JWT_SECRET` | Khóa bí mật cho JWT |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID (tạo tại [Google Cloud Console](https://console.cloud.google.com/)) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
+| `REACT_APP_API_URL` | Địa chỉ backend API |
+| `REACT_APP_GOOGLE_CLIENT_ID` | Google OAuth Client ID dùng cho frontend |
+
+## Bước 3: Cài Đặt Backend (API)
 
 ```bash
 cd api
@@ -28,7 +46,7 @@ hoặc
 npm i --legacy-peer-deps
 ```
 
-## Bước 3: Cài Đặt Frontend (Web)
+## Bước 4: Cài Đặt Frontend (Web)
 
 Mở terminal mới và chạy:
 
@@ -43,7 +61,7 @@ hoặc
 yarn install
 ```
 
-## Bước 4: Khởi Động MongoDB
+## Bước 5: Khởi Động MongoDB
 
 Đảm bảo MongoDB đang chạy trên hệ thống của bạn. Bạn có thể kiểm tra bằng cách:
 
@@ -51,7 +69,7 @@ yarn install
 mongo
 ```
 
-## Bước 5: Seed Dữ Liệu (Optional)
+## Bước 6: Seed Dữ Liệu (Optional)
 
 Trong folder `api`, chạy:
 
@@ -65,7 +83,7 @@ hoặc
 npm run seed
 ```
 
-## Bước 6: Chạy Backend
+## Bước 7: Chạy Backend
 
 Trong folder `api`, chạy:
 
@@ -81,7 +99,7 @@ npm run dev
 
 Backend sẽ chạy tại: **http://localhost:7000**
 
-## Bước 7: Chạy Frontend
+## Bước 8: Chạy Frontend
 
 Mở terminal mới, chuyển vào folder `web`, rồi chạy:
 
@@ -97,7 +115,7 @@ npm start
 
 Frontend sẽ chạy tại: **http://localhost:3000**
 
-## Bước 8: Mở Ứng Dụng
+## Bước 9: Mở Ứng Dụng
 
 Mở trình duyệt web và truy cập:
 - **Frontend**: http://localhost:3000

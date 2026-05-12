@@ -37,10 +37,6 @@
   "scripts": {
     "dev": "nodemon server.js",
     "drop": "node models/drop.js",
-    "migrate:down": "node migrations/001-users-down.js",
-    "migrate:up": "node migrations/001-users-up.js",
-    "migrate:auth:up": "node migrations/002-auth-updates-up.js",
-    "migrate:auth:down": "node migrations/002-auth-updates-down.js",
     "seed": "node models/seed.js",
     "start": "node server.js",
     "deploy": "now -E production.env",
