@@ -162,7 +162,3 @@ legacy-peer-deps=true
 yarn cache clean
 yarn install --legacy-peer-deps
 ```
-
----
-
-**Chúc mừng! Dự án của bạn đã sẵn sàng để phát triển!** 🚀
