@@ -11,7 +11,7 @@
 ## Bước 1: Clone Dự Án
 
 ```bash
-git clone https://github.com/julia-/room-booking-system
+https://github.com/QUAN-LY-DU-AN-NHOM-10-DIEM/room-booking.git
 cd room-booking
 ```
 
